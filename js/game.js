@@ -72,11 +72,16 @@ boss:{hpM:25,atkM:1.2,expM:25,goldM:10,ai:'boss',isBoss:1,lvl:18,wake:'The old b
  mimic:{ai:'mimic',skin:'mimic',w:50,h:66,spd:60,ms:.5,hpM:1.6,atkM:1.3,expM:2.8,goldM:2,drop:.1,names:['Portrait Mimic'],pals:[{k:'#c9a060',e:'#ff5a5a',l:'#8a6a3a'}],rows:[GO]},
  armour:{ai:'golem',skin:'armour',w:54,h:70,spd:42,lvb:1,ms:.53,hpM:2.6,atkM:1.4,expM:3.2,goldM:2.4,drop:.16,sweep:1,names:['Cursed Armour'],pals:[{k:'#6a6a8a',e:'#c98aff',l:'#4a4a66'}],rows:[GO]},
  shadow:{ai:'boss',skin:'shade',isBoss:1,lvl:40,w:90,h:118,spd:95,ms:.52,hpM:70,atkM:1.3,expM:60,goldM:60,names:["The Headmaster's Shadow"],wake:'The cracked bell seal flares violet… the Headmaster\'s Shadow rises!',dmsg:'The Shadow shrieks as the bell seal flares… and a single black page tears free and flies upward.',pals:[{s:'#2a1a4a',h:'#4a3a7a',e:'#c98aff',m:'#140c28',g:'#8a4ad6',c:'#8a80c0'}],rows:[BO],sc:4},
+ crab:{ai:'crab',skin:'crab',w:52,h:46,spd:62,ms:.4,hpM:1.5,atkM:1,expM:1.3,goldM:1.2,names:['Gear Crab'],pals:[{k:'#d9a441',e:'#5ad1c6',l:'#8a5a2a'}],rows:[GO]},
+ gull:{ai:'gull',skin:'gull',w:52,h:34,spd:150,fly:1,lvb:1,ms:.42,hpM:.8,atkM:1.05,expM:1.2,goldM:1.1,names:['Kite Gull'],pals:[{w:'#f3e7c9',b:'#ffffff',e:'#2a2030'}],rows:BA},
+ automaton:{ai:'golem',skin:'automaton',w:52,h:72,spd:44,lvb:2,ms:.45,hpM:2.6,atkM:1.4,expM:2.6,goldM:2.4,drop:.16,vent:1,names:['Rusted Automaton'],pals:[{k:'#a0522d',e:'#ffd36a',l:'#6a3a20'}],rows:[GO]},
+ jelly:{ai:'jelly',skin:'jelly',w:46,h:46,spd:46,fly:1,ms:.27,hpM:1,atkM:1,expM:1.3,goldM:1.2,names:['Storm Jelly'],pals:[{w:'#6ff2ff',b:'#ffe45c',e:'#1d2a4a'}],rows:BA},
+ colossus:{ai:'boss',skin:'colossus',isBoss:1,lvl:50,w:110,h:140,spd:70,ms:1.25,hpM:91,atkM:1.3,expM:60,goldM:60,names:['Brass Colossus'],wake:'Steam hisses across the deck… the Brass Colossus lurches awake!',dmsg:'The Colossus grinds to a halt. The lighthouse lamp blazes back to life!',pals:[{s:'#8a6a2a',h:'#d9a441',e:'#ff8a3d',m:'#3a2a10',g:'#ffe45c',c:'#f3e7c9'}],rows:[BO],sc:4},
  mirror:{ai:'mirror',w:30,h:60,spd:170,names:['Your Shadow'],hpM:1,atkM:1,expM:0,goldM:0,pals:[{g:'#000',l:'#222',e:'#c98aff',m:'#000',d:'#111'}],rows:[SL]}
 };
 /* Monster stats come from one level curve (L = monster level) times each type's role multipliers.
    To add a monster: give it hpM/atkM/expM/goldM and an ai ('slime','worm','bat','golem','boss'). */
-const CURVE={hp:L=>(10+10*L)*(1+L*.08),atk:L=>(.025+.0015*L)*(182+28.8*L)+3.4+1.4*L,def:L=>Math.round(L*.6),exp:L=>25*L**1.7/(8+.6*L),gold:L=>2+1.6*L+.05*L*L,tier:L=>Math.min(8,1+Math.floor(L/6))};
+const CURVE={hp:L=>(10+10*L)*(1+L*.08),atk:L=>(.025+.0015*L)*(182+28.8*L)+3.4+1.4*L,def:L=>Math.round(L*.6),exp:L=>25*L**1.7/(8+.6*L),gold:L=>2+1.6*L+.05*L*L,tier:L=>Math.min(10,1+Math.floor(L/6))};
 const MS={};
 for(const k in MT){const t=MT[k],sc=t.sc||3;MS[k]=t.pals.map(p=>t.rows.map(r=>spr(r,p,sc)));MS[k+'W']=white(t.rows[0],sc)}
 /* ---------- hand-drawn art ---------- */
@@ -95,17 +100,17 @@ function loadGroup(g){if(GST[g])return GST[g].p;const ks=ART_G[g]||[],st=GST[g]=
    im.onload=()=>{IMG[k]=im;st.d++;if(--left===0)fin()};im.onerror=()=>{ARTFAIL[k]=1;st.d++;if(--left===0)fin()};im.src=ARTDATA[k]})});
  return st.p}
 function loadArt(done){loadWithBar(['core'],'Opening the academy gates…').then(()=>{artReady=!ART_G.core.some(k=>ARTFAIL[k]);done()})}
-const MGC={};function mapGroups(i){if(MGC[i])return MGC[i];const M=MAPS[i],s=new Set(['core']),add=k=>{if(k&&MAN[k])s.add(MAN[k].group||'core')};
+const MGC={};function mapGroups(i){if(MGC[i])return MGC[i];const M=MAPS[i],s=new Set(['core']),add=(k,d)=>{if(!k||(d|0)>3)return;if(MAN[k]&&ARTDATA[k])s.add(MAN[k].group||'core');else for(const r of PH)if(r[0]===k)add(r[1],(d|0)+1)};
  if(M.arena)Object.keys(ART_G).forEach(g=>s.add(g));
  for(const z of M.zones){(z.bg||[]).forEach(b=>add(b[0]));(z.tk||[]).forEach(add);
-  for(const t of [...(z.mobs||[]),z.boss]){if(!t||!MT[t])continue;const sk=MT[t].skin||t;for(const k in MAN)if(k===sk||k.startsWith(sk+'_'))add(k)}}
+  for(const t of [...(z.mobs||[]),z.boss]){if(!t||!MT[t])continue;const sk=MT[t].skin||t;for(const k in MAN)if(k===sk||k.startsWith(sk+'_'))add(k);for(const r of PH)if(r[0]===sk||r[0].startsWith(sk+'_'))add(r[0])}}
  (M.obj||[]).forEach(o=>add(o.art||(o.k==='frame'?'vframe':'')));return MGC[i]=[...s]}
 function showLdr(t){$('ldrT').textContent=t;$('ldrB').style.width='0%';$('ldr').classList.add('on')}
 function loadWithBar(gs,t){const L=gs.filter(g=>!gReady(g));if(!L.length)return Promise.resolve();showLdr(t);
  const iv=setInterval(()=>{let n=0,d=0;for(const g of L){const st=GST[g];n+=st?st.n:(ART_G[g]||[]).length;d+=st?st.d:0}$('ldrB').style.width=Math.round(100*d/Math.max(1,n))+'%'},80);
  return Promise.all(L.map(loadGroup)).then(()=>{clearInterval(iv);$('ldrB').style.width='100%';$('ldr').classList.remove('on')})}
 let PFQ=Promise.resolve();function prefetch(gs){for(const g of gs)if(!GST[g])PFQ=PFQ.then(()=>loadGroup(g))}
-function prefetchFrom(i){const M=MAPS[i];if(!M)return;const gs=[];(M.obj||[]).forEach(o=>{if(o.k==='warp'&&MAPS[o.to])gs.push(...mapGroups(o.to))});prefetch(gs)}
+function prefetchFrom(i){const M=MAPS[i];if(!M)return;const gs=[];(M.obj||[]).forEach(o=>{if(o.to!=null&&MAPS[o.to])gs.push(...mapGroups(o.to))});prefetch(gs)}
 let LOADING=0;function needMap(i,fn){const gs=mapGroups(i);if(gs.every(gReady)){fn();prefetchFrom(i);return}if(LOADING)return;LOADING=1;
  const wp=paused;paused=true;loadWithBar(gs,'Loading '+MAPS[i].name+'…').then(()=>{LOADING=0;paused=wp;fn();prefetchFrom(i)})}
 function whiteOf(k){if(WIMG[k])return WIMG[k];const im=IMG[k],c=document.createElement('canvas');c.width=im.width;c.height=im.height;const g=c.getContext('2d');g.drawImage(im,0,0);g.globalCompositeOperation='source-in';g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);return WIMG[k]=c}
@@ -128,8 +133,8 @@ function makeFreshArt(){if(IMG.fresh_idle)return;for(const a of ['idle','walk','
   IMG['fresh_'+a]=c;MAN['fresh_'+a]=MAN['blade_'+a]}}
 const RA=k=>!!ARTDATA[k],THSPR={blade:'warden',archer:'laureate',mage:'prof'};const anim=(k,x,y,s,life,o={})=>fx.push({k:'a',key:k,x,y,s,life,max:life,...o});
 const ICO_CH={Charm:'charm',Brooch:'brooch',Pendant:'pendant'},ICO_W={fresh:'psword',blade:'saber',archer:'bow',mage:'wand'};
-const itemIcon=it=>{if(it.t>=7){const k='ico_t'+Math.min(8,it.t)+'_'+(it.slot==='weapon'?ICO_W[it.cls]||'saber':'charm');if(ARTDATA[k])return k}return 'ico_'+(it.slot==='weapon'?ICO_W[it.cls]||'saber':ICO_CH[it.name.split(' ').pop()]||'charm')};
-const TIERC=['#c9c2dc','#d98a4a','#bfe9ff','#ffd23f','#c98aff','#ffb070','#9fe8ff','#7f8cff','#ff6a9a'];
+const itemIcon=it=>{if(it.t>=7){const k='ico_t'+(it.t>8&&!ARTDATA['ico_t'+it.t+'_charm']?8:it.t)+'_'+(it.slot==='weapon'?ICO_W[it.cls]||'saber':'charm');if(ARTDATA[k])return k}return 'ico_'+(it.slot==='weapon'?ICO_W[it.cls]||'saber':ICO_CH[it.name.split(' ').pop()]||'charm')};
+const TIERC=['#c9c2dc','#d98a4a','#bfe9ff','#ffd23f','#c98aff','#ffb070','#9fe8ff','#7f8cff','#ff6a9a','#d9a441','#5ad1c6'];
 
 
 /* ---------- world ---------- */
@@ -140,7 +145,7 @@ const MAPS=[
   {name:'Hall of Whispering Books',x0:2700,x1:4700,lv:2,fb:2,mobs:['slime','bat','golem','bat'],cap:14,dlv:10,sky:['#2e2140','#5d3f56'],gr:'#5a3b2a',top:'#b07a40',bg:[['bg_lib_far',.12,0],['bg_lib_mid',.42,290]],tk:['t_lib_top','t_lib_fill','p_lib']},
   {name:'Old Bell Tower',x0:4700,x1:6200,lv:3,fb:3,mobs:['bat'],cap:4,dlv:16,boss:'boss',bx:5900,rec:'Boss area · recommended Lv 15+',sky:['#1e1640','#8a4a7a'],gr:'#433d52',top:'#7a7390',bg:[['bg_tower_far',.06,0],['bg_tower_mid',.22,260],['bg_tower_near',.55,190]],tk:['t_tower_top','t_tower_fill','p_tower']}],
   plats:[[1050,385,160],[1300,315,140],[1560,385,180],[1900,330,160],[2200,390,200],[2460,320,140],[2860,380,180],[3110,305,160],[3360,375,200],[3660,300,160],[3960,380,180],[4260,320,200],[4900,375,150],[5180,300,160],[5470,375,150]],
-  obj:[{k:'warp',x:50,to:1,tx:160,lv:20,label:'Lantern Gate · Lv 20+'},{k:'warp',x:5300,to:3,tx:160,lv:30,key:1,stair:1,ly:-150,label:'Sealed Stair · Lv 30 + Moonstone Key'},{k:'deco',art:'board',x:150,s:.62,ly:-96,label:'Gardens → Library → Bell Tower'},{k:'heal',art:'fountain',x:470,s:.78,fps:5,dy:4,ly:-104,label:'Fountain · rest here to heal'},{k:'shop',art:'shop',x:735,s:.58,fps:1/3,label:'Shopkeeper · Shop'}]},
+  obj:[{k:'warp',x:50,to:1,tx:160,lv:20,label:'Lantern Gate · Lv 20+'},{k:'warp',x:5300,to:3,tx:160,lv:30,key:1,stair:1,ly:-150,label:'Sealed Stair · Lv 30 + Moonstone Key'},{k:'deco',art:'board',x:150,s:.62,ly:-96,label:'Gardens → Library → Bell Tower'},{k:'heal',art:'fountain',x:470,s:.78,fps:5,dy:4,ly:-104,label:'Fountain · rest here to heal'},{k:'shop',art:'shop',x:735,s:.58,fps:1/3,label:'Shopkeeper · Shop'},{k:'dock',art:'npc_wren',x:845,to:5,lv:40,s:.58,ly:-190,cond:()=>shadowDone(),label:'Skyward Dock · Lv 40'}]},
  {name:'Lanternfall Village',w:6400,spawn:300,music:'night',shop:{name:"Marlo's Lantern Outfitter",note:'Lanternfall gear is only sold here.',tiers:[5,6],bulk:1},zones:[
   {name:'Lanternfall Village',x0:0,x1:1100,lv:0,safe:1,sky:['#3a2a5a','#ff9e6a'],gr:'#5a4636',top:'#c8a46a',bg:[['bg_vil_far',.12,0],['bg_vil_mid',.35,300]],tk:['t_vil_top','t_vil_fill','p_vil']},
   {name:'Mistveil Marsh',x0:1100,x1:3400,mobs:['frog','wisp','frog'],cap:14,dlv:22,sky:['#2a4a4a','#9fc8b0'],gr:'#2f4a3a',top:'#5a8a5a',bg:[['bg_marsh_far',.08,0],['bg_marsh_mid',.25,300],['bg_marsh_near',.5,170]],tk:['t_marsh_top','t_marsh_fill','p_marsh'],ph:96},
@@ -162,6 +167,18 @@ const MAPS=[
  ,{id:'thesis',name:'Thesis Defence',hidden:1,trial:1,music:'boss',w:1700,spawn:300,zones:[
   {name:'The Sealed Vault',x0:0,x1:1700,trial:1,mobs:[],cap:0,dlv:40,sky:['#0c0820','#3a1a5a'],gr:'#1a1030',top:'#8a4ad6',bg:[['bg_vlt_far',.06,0],['bg_vlt_mid',.22,285]],tk:['t_vlt_top','t_vlt_fill','p_vlt']}],
   plats:[[560,370,160],[1100,370,160]],obj:[{k:'texit',x:60,label:'Leave the trial'}]}
+ ,{id:'harbor1',name:'Clocktide Harbor',w:6900,spawn:340,music:'field',dcap:9,shop:{name:"Ottilie's Tinkery",note:'Harbor gear is only sold here. Mind the blue lever.',tiers:[9,10],bulk:1,shard10:1},zones:[
+  {name:'Brassbell Wharf',x0:0,x1:1100,safe:1,fb:'wharf',sky:['#5ad1c6','#f3e7c9'],gr:'#6a4a2a',top:'#b8864a',bg:RA('bg_wharf_far')?[['bg_wharf_far',.12,0]]:null,tk:['t_wharf_top','t_wharf_fill','p_wharf']},
+  {name:'Cogwind Docks',x0:1100,x1:3300,mobs:['crab','gull','crab'],cap:14,dlv:42,fb:'docks',sky:['#3fb8b0','#d9f2ea'],gr:'#4a3420',top:'#8a6a44',bg:RA('bg_docks_far')?[['bg_docks_far',.12,0]]:null,tk:['t_docks_top','t_docks_fill','p_docks']},
+  {name:'Cloudsail Rigging',x0:3300,x1:5500,mobs:['gull','automaton','jelly'],cap:14,dlv:46,fb:'rig',gust:1,sky:['#7cd6ff','#f3e7c9'],gr:'#5a3a22',top:'#a87a4a',bg:RA('bg_rig_far')?[['bg_rig_far',.12,0]]:null,tk:['t_rig_top','t_rig_fill','p_rig']},
+  {name:'Stormglass Lighthouse',x0:5500,x1:6900,mobs:['jelly','automaton'],cap:5,dlv:48,fb:'light',storm:1,boss:'colossus',bx:6250,rec:'Boss area · recommended Lv 48+',sky:['#0f1630','#2f4468'],gr:'#2a3040',top:'#6a7890',bg:RA('bg_light_far')?[['bg_light_far',.06,0]]:null,tk:['t_light_top','t_light_fill','p_light']}],
+  plats:[[1250,385,160],[1520,315,150],[1800,385,180],[2100,320,160],[2400,390,190],[2700,320,150],[3000,385,170],
+   [3420,385,170],[3570,300,150],[3440,215,150],[3590,130,150],[3750,150,290],
+   [3900,385,170],[4050,300,150],[3920,215,150],[4070,130,150],[4230,150,290],
+   [4380,385,170],[4530,300,150],[4400,215,150],[4550,130,150],[4710,150,290],
+   [4860,385,170],[5010,300,150],[4880,215,150],[5030,130,150],
+   [5640,385,150],[5900,315,150],[6620,385,130],[6700,300,120],[6620,215,120],[6700,130,150]],
+  obj:[{k:'ship',art:'npc_wren',x:190,to:0,s:.58,ly:-190,label:'The Starling · Captain Wren'},{k:'heal',art:RA('kettle')?'kettle':'',kettle:1,x:560,s:.7,fps:3,dy:4,ly:-176,steam:1,label:'Teakettle Boiler · heals'},{k:'ottilie',art:'npc_ottilie',x:830,s:.58,fps:.4,ly:-132,label:'Ottilie Spanner · Shop'},{k:'lamp',x:6780,y:130,ly:-118,label:'Stormglass Lamp'}]}
 ];
 /* REGION TEMPLATE: to add a region, push one entry to MAPS:
    {name, w (width), spawn (x), music:'field'|'night'|'boss'|'town', shop:{name,note,tiers:[t..],bulk},
@@ -182,10 +199,11 @@ const PETS={
  grimoire:{name:'Little Grimoire',desc:'Prefect Lumen\'s reward. +10% max SP, −5% skill cooldowns.',cost:0,quest:1,sp:.1,cdr:.05,key:'pet_grimoire',s:.3},
  mochi:{name:'Mochi',desc:'Bouncy pudding slime. +12% max HP.',cost:3000,hp:.12,key:'pet_mochi',s:.32},
  moth:{name:'Lantern Moth',desc:'Glows in the dark. +8% ATK.',cost:5000,atk:.08,key:'pet_moth',s:.3},
- wisp:{name:'Star Wisp',desc:'Lucky little star. +6% crit, +15% gold.',cost:8000,crit:6,gold:.15,key:'pet_wisp',s:.28}};
+ wisp:{name:'Star Wisp',desc:'Lucky little star. +6% crit, +15% gold.',cost:8000,crit:6,gold:.15,key:'pet_wisp',s:.28},
+ sparrow:{name:'Clockwork Sparrow',desc:'Ottilie\'s reward. +15% Star Shard drops, 50% bigger pickup range.',cost:0,quest:1,shard:.15,range:.5,key:'pet_sparrow',s:.3}};
 const petLv=id=>(P&&P.petLv&&P.petLv[id])||1,petNeed=lv=>20+lv*20;
 const petB=k=>P&&P.pet&&PETS[P.pet]?(PETS[P.pet][k]||0)*(1+.1*(petLv(P.pet)-1))*(1+.04*pl('pcare')):0;
-function petBuffTxt(id){const p=PETS[id],f=1+.1*(petLv(id)-1),o=[];if(p.hp)o.push('+'+Math.round(p.hp*100*f)+'% max HP');if(p.atk)o.push('+'+Math.round(p.atk*100*f)+'% ATK');if(p.crit)o.push('+'+(p.crit*f).toFixed(1)+'% crit');if(p.sp)o.push('+'+Math.round(p.sp*100*f)+'% max SP');if(p.cdr)o.push('−'+(p.cdr*100*f).toFixed(1)+'% cooldowns');if(p.gold)o.push('+'+Math.round(p.gold*100*f)+'% gold');return o.join(', ')}
+function petBuffTxt(id){const p=PETS[id],f=1+.1*(petLv(id)-1),o=[];if(p.hp)o.push('+'+Math.round(p.hp*100*f)+'% max HP');if(p.atk)o.push('+'+Math.round(p.atk*100*f)+'% ATK');if(p.crit)o.push('+'+(p.crit*f).toFixed(1)+'% crit');if(p.sp)o.push('+'+Math.round(p.sp*100*f)+'% max SP');if(p.cdr)o.push('−'+(p.cdr*100*f).toFixed(1)+'% cooldowns');if(p.gold)o.push('+'+Math.round(p.gold*100*f)+'% gold');if(p.shard)o.push('+'+Math.round(p.shard*100*f)+'% Star Shard drops');if(p.range)o.push('+'+Math.round(p.range*100*f)+'% pickup range');return o.join(', ')}
 let P=null,S=null;
 const mobs=[],proj=[],eproj=[],fx=[],nums=[],loot=[],timers=[],log=[];
 const K={left:0,right:0,atk:0};
@@ -229,7 +247,7 @@ const over=(a,b)=>a.l<b.r&&a.r>b.l&&a.t<b.b&&a.b>b.t;
 /* ---------- combat ---------- */
 const DL=[];function dpsNow(){const t0=T-10;while(DL.length&&DL[0][0]<t0)DL.shift();if(!DL.length)return 0;let s=0;for(const e of DL)s+=e[1];return Math.round(s/Math.max(3,T-DL[0][0]))}
 function dmgMob(m,mult,o={}){
- if(m.dead)return;let d=S.atk*mult*curMul*rnd(.9,1.1);const crit=Math.random()*100<S.crit;if(crit){d*=1.6+.06*pl('keen');if(pl('tail')&&T-(P.twT||-9)>=.5){P.twT=T;P.cds[2]=Math.max(0,P.cds[2]-.1*pl('tail'));P.cds[3]=Math.max(0,P.cds[3]-.1*pl('tail'))}}d*=1+.01*logMs(m.type);if(m.stun>0)d*=1+.04*pl('rhythm');if(Math.abs(m.x-P.x)>250)d*=1+.03*pl('far');
+ if(m.dead)return;if(m.guardT>0&&Math.sign(P.x-m.x)===m.dir){m.aggro=1;if(!(m.blkT>T)){m.blkT=T+.25;nums.push({x:m.x+rnd(-6,6),y:m.y-m.h-6,t:'Blocked',life:.6,col:'#ffe9a8'});tone(900,.05,'square',.02)}return}let d=S.atk*mult*curMul*rnd(.9,1.1);if(m.furn>0)d*=2;const crit=Math.random()*100<S.crit;if(crit){d*=1.6+.06*pl('keen');if(pl('tail')&&T-(P.twT||-9)>=.5){P.twT=T;P.cds[2]=Math.max(0,P.cds[2]-.1*pl('tail'));P.cds[3]=Math.max(0,P.cds[3]-.1*pl('tail'))}}d*=1+.01*logMs(m.type);if(m.stun>0)d*=1+.04*pl('rhythm');if(Math.abs(m.x-P.x)>250)d*=1+.03*pl('far');
  d=Math.max(1,Math.round(d-m.def));if(!(m.frzCd>T)){m.frz=.065;m.frzCd=T+.25}if(!m.boss)m.x+=Math.sign((m.x-P.x)||1)*5;if(m.ai==='mimic'&&m.st==='disguise'){m.st='reveal';m.sT=.3}if(m.sh>0){const a=Math.min(m.sh,d);m.sh-=a;d-=a}m.hp-=d;DL.push([T,d]);if(DL.length>600)DL.shift();m.flash=.06;m.aggro=1;if(m.af){if(m.af.includes('thorny')&&d>0&&P.deadT<=0){const r=Math.max(1,Math.round(d*.05));P.hp=Math.max(1,P.hp-r);if(Math.random()<.3)nums.push({x:P.x,y:P.y-60,t:'-'+r,life:.6,col:'#7dff9a'})}if(m.af.includes('frenzy')&&!m.fz&&m.hp<m.mhp*.5){m.fz=1;m.atk*=1.3}}
  combo++;comboT=2.5;sfx(crit?'crit':'hit');nums.push({x:m.x+rnd(-8,8),y:m.y-m.h-6,t:d,crit,life:.9,col:crit?'#ffd23f':'#ffffff'});
  if(o.kb&&!m.boss)m.vx=(o.dir||P.dir)*o.kb;
@@ -293,7 +311,7 @@ function hurtP(d,from){
 function gainExp(e){if(P.lv>=LVCAP){P.exp=need(P.lv);return}P.exp+=e;while(P.lv<LVCAP&&P.exp>=need(P.lv)){P.exp-=need(P.lv);P.lv++;P.pts+=4;S=stats();P.hp=S.mhp;P.sp=S.msp;if(P.lv>=LVCAP){P.exp=need(P.lv);msg('Lv '+LVCAP+' reached: this is the beta level cap!','#ffd23f')}sfx('lvl');msg('Level up! Lv '+P.lv+' · +4 stat points','#ffd23f');if(P.lv===10&&P.cls==='fresh')msg('You can choose your course now! Press Course.','#7dff9a');qCheck();anim('lvl',P.x,P.y,.8,.9,{follow:1});updBadge();save()}}
 
 /* ---------- items ---------- */
-const BAG=100;const TIER=['Practice','Bronze','Moonsilver','Starlit','Bellforged','Lanternlight','Astral','Inkbound','Sealbreaker'];
+const BAG=100;const TIER=['Practice','Bronze','Moonsilver','Starlit','Bellforged','Lanternlight','Astral','Inkbound','Sealbreaker','Tidebrass','Stormglass'];
 const WN={fresh:'Practice Sword',blade:'Saber',archer:'Longbow',mage:'Wand'};
 const CN=['Charm','Brooch','Pendant'];
 let uid=1;
@@ -336,14 +354,23 @@ const QUESTS=[
  {t:'Hollow Guard',d:'Defeat 8 Cursed Armours in the Hall of Living Portraits.',kill:'armour',n:8,r:{exp:70000,gold:14000,item:[7,'weapon']}},
  {hand:[{who:'Prefect Lumen',art:'npc_lumen',t:'Every master of Starbell must face the worst version of themselves. It\'s our oldest tradition: the Thesis Defence.'},{who:'Prefect Lumen',art:'npc_lumen',t:'When you reach Lv 40, talk to me and I\'ll open the Vault for you. Alone.'}],t:'The Headmaster\'s Shadow',d:'Defeat the Headmaster\'s Shadow in the Sealed Vault (recommended Lv 38+). Then talk to Prefect Lumen.',kill:'shadow',n:1,r:{exp:120000,gold:30000,item:[8,'charm']}},
  {hand:[{who:'Prefect Lumen',art:'npc_lumen',t:'You know… I think I can finally rest.'},{who:'Prefect Lumen',art:'npc_lumen',t:'Take my prefect badge. Wear it well, Professor.'}],t:'Thesis Defence',d:'Reach Lv 40, then ask Prefect Lumen to begin the Thesis Defence and defeat Your Shadow in the Sealed Vault.',thesis:1,r:{gold:50000,item:[8,'weapon']}},
+ {t:'All Aboard',d:'Defeat the Headmaster\'s Shadow, reach Lv 40, then board the Starling at the Skyward Dock (far right of the Starbell Courtyard) and fly to Clocktide Harbor.',map:MI('harbor1'),r:{exp:5000,gold:10000,pots:10,eths:10}},
+ {t:'Mind the Gears',d:'Talk to Ottilie Spanner in Brassbell Wharf.',talk:'ottilie',r:{exp:3000,gold:5000,shards:10}},
+ {t:'Pinch Points',d:'Defeat 20 Gear Crabs in Cogwind Docks. Hit them from behind, or wait until they lower their claws.',kill:'crab',n:20,r:{exp:6000,gold:15000,item:[8,'charm']}},
+ {t:'Gull-ible',d:'Defeat 20 Kite Gulls. When one cries out and stops, it\'s about to dive: step aside!',kill:'gull',n:20,r:{exp:6000,gold:15000,pots:10,eths:5}},
+ {hand:[{who:'Ottilie Spanner',art:'npc_ottilie',t:'Twelve! Lovely. These cogs came off the lighthouse\'s storm engine. Which has started walking around, by the way.'},{who:'Ottilie Spanner',art:'npc_ottilie',t:'I built you a little helper from the spares. Wind it once a week. Or don\'t. It\'s not fussy.'}],t:'Spare Parts',d:'Collect 12 Brass Cogs for Ottilie. They drop from Clocktide Harbor monsters while this quest is active.',collect:'cog',n:12,r:{exp:7000,gold:18000,pet:'sparrow'}},
+ {t:'Rust Bucket',d:'Defeat 10 Rusted Automatons in Cloudsail Rigging. Watch the floor in front of them for steam.',kill:'automaton',n:10,r:{exp:8000,gold:20000,item:[9,'weapon']}},
+ {t:'Shock Value',d:'Defeat 15 Storm Jellies. Back off when one starts to glow.',kill:'jelly',n:15,r:{exp:8000,gold:20000,item:[9,'charm']}},
+ {t:'Engine Trouble',d:'Defeat the Brass Colossus on the Stormglass Lighthouse deck (recommended Lv 48+).',kill:'colossus',n:1,r:{exp:20000,gold:50000,item:[10,'weapon']}},
+ {hand:[{who:'Captain Wren',art:'npc_wren',t:'The Starling needs a diving keel before we go below the clouds. Give Ottilie and me a little while.'},{who:'Captain Wren',art:'npc_wren',t:'Keep your goggles handy.'}],t:'Light the Lamp',d:'Climb to the top of the Stormglass Lighthouse and relight the lamp.',lamp:1,r:{exp:6000,gold:20000,shards:15}},
  {t:'Extra Credit',d:'Defeat 40 monsters anywhere. Repeatable.',kill:'any',n:40,rep:1,r:{goldLv:300,pots:10,eths:5}}];
 const curQ=()=>QUESTS[Math.min(P.q||0,QUESTS.length-1)];
-function qProg(){const q=curQ();if(q.kill)return [Math.min(P.qc||0,q.n),q.n];if(q.lv)return [Math.min(P.lv,q.lv),q.lv];if(q.map)return [((P.vm||{})[q.map]||(q.map===1&&P.vis1))?1:0,1];if(q.pet)return [(P.pets||[]).length?1:0,1];if(q.talk)return [((P.talked||{})[q.talk])?1:0,1];if(q.collect)return [Math.min(P.pages||0,q.n),q.n];if(q.thesis)return [P.thesis?1:0,1];return [P.cls!=='fresh'?1:0,1]}
+function qProg(){const q=curQ();if(q.kill)return [Math.min(P.qc||0,q.n),q.n];if(q.lv)return [Math.min(P.lv,q.lv),q.lv];if(q.map)return [((P.vm||{})[q.map]||(q.map===1&&P.vis1))?1:0,1];if(q.pet)return [(P.pets||[]).length?1:0,1];if(q.talk)return [((P.talked||{})[q.talk])?1:0,1];if(q.collect)return [Math.min((q.collect==='cog'?P.cogs:P.pages)||0,q.n),q.n];if(q.thesis)return [P.thesis?1:0,1];if(q.lamp)return [P.lamp?1:0,1];return [P.cls!=='fresh'?1:0,1]}
 function qReady(){const [a,b]=qProg();return a>=b}
 function qCheck(){if(qReady()&&!P.qAnn){P.qAnn=1;msg('Quest complete: '+curQ().t+'! Claim it in Quests.','#7dff9a');updBadge()}}
 function rewardTxt(r){const o=[];if(r.exp)o.push(Math.round(r.exp*EXPR)+' EXP');if(r.goldLv)o.push((r.goldLv*P.lv).toLocaleString('en')+' gold (300 × your level)');if(r.gold)o.push(r.gold+' gold');if(r.pots)o.push(r.pots+' potions');if(r.eths)o.push(r.eths+' ethers');if(r.shards)o.push(r.shards+' Star Shards');if(r.pet)o.push(PETS[r.pet].name+' pet');if(r.item)o.push(TIER[r.item[0]]+' '+(r.item[1]==='weapon'?'weapon':'charm'));if(r.adv)o.push('advanced title + 5th skill');return o.join(' · ')}
 function claimQ(){if(!qReady())return;const q=curQ(),r=q.r;let over=false;if(r.item){over=P.inv.length>=BAG;{const ni=makeItem(r.item[0],r.item[1]);P.inv.push(ni);gotItem(ni)}if(over)msg('Your satchel is over its '+BAG+'-item limit. Sell some gear in the Shop.','#ffb0b0')}
- if(q.hand)setTimeout(()=>say(q.hand),60);P.gold+=(r.gold||0)+(r.goldLv||0)*P.lv;P.pots+=r.pots||0;P.shards=(P.shards||0)+(r.shards||0);if(r.pet){P.pets=P.pets||[];if(!P.pets.includes(r.pet))P.pets.push(r.pet);P.pet=r.pet;S=stats();sfx('pet')}if(q.collect)P.pages=0;P.eths=(P.eths||0)+(r.eths||0);
+ if(q.hand)setTimeout(()=>say(q.hand),60);P.gold+=(r.gold||0)+(r.goldLv||0)*P.lv;P.pots+=r.pots||0;P.shards=(P.shards||0)+(r.shards||0);if(r.pet){P.pets=P.pets||[];if(!P.pets.includes(r.pet))P.pets.push(r.pet);P.pet=r.pet;S=stats();sfx('pet')}if(q.collect==='cog')P.cogs=0;else if(q.collect)P.pages=0;P.eths=(P.eths||0)+(r.eths||0);
  if(r.adv&&P.cls!=='fresh'){P.adv=true;S=stats();P.hp=S.mhp;anim('lvl',P.x,P.y,1,1,{follow:1});msg('You are now '+(/^[AEIOU]/.test(title())?'an ':'a ')+title()+'! New skill: '+ADV[P.cls].sk,'#ffd23f');setupSkills()}
  msg('Quest reward: '+rewardTxt(r),'#ffd23f');if(!q.rep)P.q=(P.q||0)+1;P.qc=0;P.qAnn=0;if(r.exp)gainExp(Math.round(r.exp*EXPR));qCheck();updBadge();save()}
 function killMob(m){
@@ -352,17 +379,18 @@ function killMob(m){
   if(m.elite==='shiny')P.kS=(P.kS||0)+1;else if(m.elite)P.kE=(P.kE||0)+1;
   if(m.boss&&(P.deaths||0)===m.d0){P.clean=P.clean||{};P.clean[m.type]=1}
   if(m.af&&m.af.includes('split'))for(const k of [-1,1]){const c=spawnMob(m.type,m.z,m.x+k*24,m.lvl);c.kid=1;c.elite=null;c.af=null;c.sh=0;c.hp=c.mhp=Math.round(m.mhp*.3);c.exp=m.exp*.15;c.gold=m.gold.map(v=>v*.15);c.drop=.02;c.name=m.name.replace(/^(Elite|Shiny) /,'')+' (split)';c.w*=.75;c.h*=.75;c.vy=-300;c.vx=k*200;c.y=Math.min(m.y,FLOOR)}if(MT[m.type].split&&!m.mini){for(const k of [-1,1]){const c=spawnMob(m.type,m.z,m.x+k*24,m.lvl);c.mini=1;c.hp=c.mhp=Math.round(m.mhp*.25);c.exp=m.exp*.15;c.gold=m.gold.map(v=>v*.2);c.name='Mini Blotling';c.w*=.7;c.h*=.7;c.vy=-320;c.vx=k*220;c.drop=.02;c.y=Math.min(m.y,FLOOR)}}
-  if(MAPS[MAP].id==='archive'&&curQ().collect&&!qReady()&&Math.random()<.25)dropLoot(m.x,m.y-m.h/2,'page',1);
+  if(MAPS[MAP].id==='archive'&&curQ().collect==='page'&&!qReady()&&Math.random()<.25)dropLoot(m.x,m.y-m.h/2,'page',1);
+  if(MAPS[MAP].id==='harbor1'&&curQ().collect==='cog'&&!qReady()&&!m.rush&&Math.random()<.25)dropLoot(m.x,m.y-m.h/2,'cog',1);
   if(m.type==='chimera'&&!P.mkey){P.mkey=1;msg('The Chimera drops the Moonstone Key!','#c9a0ff');later(.8,()=>scene('key',[{art:'ico_mkey',t:'Something glints in the fading moonlight: a key carved from moonstone, marked with the same sigil as the academy bell.'},{t:'It hums softly, pulling you toward the Old Bell Tower.'}]))}
   {const q=curQ(),key=m.mini?'blotmini':m.type==='slime'?'slime'+m.v:m.type;if(q.kill&&(q.kill===key||q.kill==='any')&&!qReady()){P.qc=(P.qc||0)+1;qCheck()}}const z=ZONES[m.z];if(pl('wind')&&P.deadT<=0)P.hp=Math.min(S.mhp,P.hp+S.mhp*.006*pl('wind'));gainExp(Math.round(m.exp*xpFall(m)*EXPR*(P.starter&&P.lv<20?1.3:1)*(1+comboB())));
   if(P.pet&&PETS[P.pet]){const id=P.pet,lv=petLv(id);P.petXp=P.petXp||{};P.petLv=P.petLv||{};if(lv<10){P.petXp[id]=(P.petXp[id]||0)+(m.boss?20:1);if(P.petXp[id]>=petNeed(lv)){P.petXp[id]-=petNeed(lv);P.petLv[id]=lv+1;msg(PETS[id].name+' grew to Lv '+(lv+1)+'! '+petBuffTxt(id),'#ffd23f');anim('fx_upgrade',pet.x,pet.y,.5,.6,{c:1});sfx('pet');S=stats()}}}
   const g=Math.round(rnd(...m.gold)*(1+petB('gold')));dropLoot(m.x,m.y-m.h/2,'gold',g);
- if(Math.random()<.1)dropLoot(m.x,m.y-m.h/2,'pot',1);if(m.boss||Math.random()<.1)dropLoot(m.x,m.y-m.h/2,'shard',m.boss?5:1);if(Math.random()<.04)dropLoot(m.x,m.y-m.h/2,'eth',1);
-const ch=m.boss?1:m.drop,tt=Math.min(8,(m.tier||1)+(m.elite==='shiny'?1:0));if(m.elite==='shiny')dropLoot(m.x,m.y-m.h/2,'shard',3);
- if(Math.random()<ch)dropLoot(m.x,m.y-m.h/2,'item',0,makeItem(Math.min(6,tt)));
+ if(Math.random()<.1)dropLoot(m.x,m.y-m.h/2,'pot',1);if(m.boss||Math.random()<.1*(1+petB('shard')))dropLoot(m.x,m.y-m.h/2,'shard',m.boss?5:1);if(Math.random()<.04)dropLoot(m.x,m.y-m.h/2,'eth',1);
+const ch=m.boss?1:m.drop,tt=Math.min(10,(m.tier||1)+(m.elite==='shiny'?1:0));if(m.elite==='shiny')dropLoot(m.x,m.y-m.h/2,'shard',3);
+ if(Math.random()<ch)dropLoot(m.x,m.y-m.h/2,'item',0,makeItem(Math.min(MAPS[MAP].dcap||6,tt)));
  if(m.boss){{const day=new Date().toDateString();P.daily=P.daily||{};if(P.daily[m.type]!==day){P.daily[m.type]=day;const g2=Math.round(rnd(...m.gold)*2);P.gold+=g2;P.shards=(P.shards||0)+5;P.pots+=3;
-   if(P.inv.length<BAG){const ni=makeItem(Math.min(8,m.tier||4),Math.random()<.5?'weapon':'charm');P.inv.push(ni);gotItem(ni)}msg('Daily boss chest! +'+g2+' gold, 5 Star Shards, 3 potions and a bonus item','#ffd23f');anim('fx_upgrade',m.x,m.y-60,1.3,.9,{c:1});sfx('chest')}}
-  dropLoot(m.x+20,m.y-30,'item',0,makeItem(Math.min(8,m.tier||4),'weapon'));for(let k=0;k<3;k++)dropLoot(m.x,m.y-30,'pot',1);bossCd=60;msg(MT[m.type].dmsg,'#ffd23f');if(m.type==='boss')later(.8,()=>scene('garg',[{t:'The Gargoyle crumbles. Above you, the old bell shudders… and a hairline crack runs down its side.'},{t:"It sways. But it doesn't ring."}]));if(m.type==='shadow')later(.8,()=>scene('shadow',[{t:'The Shadow shrieks as the bell seal flares… and a single black page tears free and flies upward, out through the tower and into the sky.'},{who:'Prefect Lumen',art:'npc_lumen',t:"You did it! But that page… that was its heart. The Umbral Page. It's out there now."},{who:'Prefect Lumen',art:'npc_lumen',t:'Come and see me in the Reading Room. There\'s something every master of Starbell has to do.'}]));shake=.5}
+   if(P.inv.length<BAG){const ni=makeItem(Math.min(10,m.tier||4),Math.random()<.5?'weapon':'charm');P.inv.push(ni);gotItem(ni)}msg('Daily boss chest! +'+g2+' gold, 5 Star Shards, 3 potions and a bonus item','#ffd23f');anim('fx_upgrade',m.x,m.y-60,1.3,.9,{c:1});sfx('chest')}}
+  dropLoot(m.x+20,m.y-30,'item',0,makeItem(Math.min(10,m.tier||4),'weapon'));for(let k=0;k<3;k++)dropLoot(m.x,m.y-30,'pot',1);bossCd=60;msg(MT[m.type].dmsg,'#ffd23f');if(m.type==='boss')later(.8,()=>scene('garg',[{t:'The Gargoyle crumbles. Above you, the old bell shudders… and a hairline crack runs down its side.'},{t:"It sways. But it doesn't ring."}]));if(m.type==='colossus'&&!m.rush)later(.8,()=>scene('colossus',[{t:'The Colossus grinds to a halt. The lamp on its shoulders flickers… and with a click, the lighthouse lamp above it blazes back to life.'},{t:'…for a moment. Then it sputters. Someone will have to climb to the top and pull the lever.'}]));if(m.type==='shadow')later(.8,()=>scene('shadow',[{t:'The Shadow shrieks as the bell seal flares… and a single black page tears free and flies upward, out through the tower and into the sky.'},{who:'Prefect Lumen',art:'npc_lumen',t:"You did it! But that page… that was its heart. The Umbral Page. It's out there now."},{who:'Prefect Lumen',art:'npc_lumen',t:'Come and see me in the Reading Room. There\'s something every master of Starbell has to do.'}]));shake=.5}
  for(let k=0;k<10;k++)fx.push({k:'p',x:m.x,y:m.y-m.h/2,vx:rnd(-200,200),vy:rnd(-260,60),life:.6,max:.6,c:'#f6ecd2',s:5});
 }
 
@@ -372,7 +400,7 @@ function spawnMob(type,zi,x,lvl){
  const onPlat=!t.fly&&Math.random()<.35;let y=FLOOR;
  if(onPlat){const ps=PLAT.filter(p=>p.h<20&&p.x>z.x0&&p.x+p.w<z.x1);if(ps.length){const p=ps[Math.floor(Math.random()*ps.length)];x=p.x+rnd(20,p.w-20);y=p.y}}
  const g=CURVE.gold(L)*(t.goldM||1),hp=Math.round(CURVE.hp(L)*(t.hpM||1));
- const m={type,z:zi,x,y:t.fly?rnd(230,360):y,w:t.w,h:t.h,vx:0,vy:0,hp,mhp:hp,atk:CURVE.atk(L)*(t.atkM||1),def:CURVE.def(L),exp:CURVE.exp(L)*(t.expM||1),gold:[g*.6,g*1.2],tier:z.tier!=null&&!t.isBoss?z.tier:Math.min(8,CURVE.tier(L)+(t.isBoss?1:0)),
+ const m={type,z:zi,x,y:t.fly?rnd(230,360):y,w:t.w,h:t.h,vx:0,vy:0,hp,mhp:hp,atk:CURVE.atk(L)*(t.atkM||1),def:CURVE.def(L),exp:CURVE.exp(L)*(t.expM||1),gold:[g*.6,g*1.2],tier:z.tier!=null&&!t.isBoss?z.tier:Math.min(10,CURVE.tier(L)+(t.isBoss?1:0)),
   spd:t.spd,fly:t.fly,v,dir:Math.random()<.5?-1:1,tm:rnd(.3,1.5),hitCd:0,stun:0,slow:0,flash:0,aggro:0,st:'idle',sT:0,anim:rnd(0,6),name:t.names[Math.min(v,t.names.length-1)],lvl:L,boss:!!t.isBoss,ai:t.ai||type,drop:t.drop||.07};
  if(!t.isBoss&&!z.arena&&!lvl){const r=Math.random();if(r<.012){m.elite='shiny';m.hp=m.mhp=hp*2;m.exp*=6;m.gold=m.gold.map(v=>v*8);m.drop=1;m.name='Shiny '+m.name;if(Math.abs(x-P.x)<900)msg('A shiny '+t.names[0]+' appeared!','#ffd23f')}
   else if(r<.1){m.elite='elite';m.hp=m.mhp=hp*3;m.atk*=1.3;m.exp*=3;m.gold=m.gold.map(v=>v*3);m.drop*=3;m.name='Elite '+m.name;m.w*=1.15;m.h*=1.15}}
@@ -388,7 +416,7 @@ function updMob(m,dt){if(m.boss&&!m.mirror){m.age=(m.age||0)+dt;const lim=ENR[m.
  m.tm-=dt;
 if(m.ai==='slime'){if(m.onG){m.vx*=.8;if(m.tm<=0){if(near)m.dir=Math.sign(dx)||1;else if(Math.random()<.4)m.dir*=-1;{const t=MT[m.type];m.vy=-rnd(260,360)*(near?t.jv||1:1);m.vx=m.dir*sp*1.7*(near?t.jx||1:1)}m.tm=rnd(.7,1.4)}}}
 else if(m.ai==='worm'){if(near)m.dir=Math.sign(dx)||1;else if(m.tm<=0){m.dir*=-1;m.tm=rnd(1.5,3)}m.vx=m.dir*sp}
-else if(m.ai==='golem'){
+else if(m.ai==='golem'){if(MT[m.type].vent&&near&&m.st!=='wind'&&(m.vcd=(m.vcd==null?rnd(2,4):m.vcd)-dt)<=0&&adx<320){m.vcd=rnd(4.5,6);m.dir=Math.sign(dx)||1;addMark(m.x+m.dir*120,48,.9,m.atk*1.1,'steam')}
 if(m.st==='wind'){m.vx=0;m.sT-=dt;if(m.sT<=0){m.st='idle';m.tm=2.2;m.slamT=.35;anim('shock',m.x+m.dir*36,m.y+4,.6,.35);shake=Math.max(shake,.1);if(Math.abs(P.x-(m.x+m.dir*34))<(MT[m.type].sweep?110:70)&&Math.abs(P.y-m.y)<60)hurtP(m.atk*1.4,m.x)}}
   else{if(near){m.dir=Math.sign(dx)||1;if(adx<75&&m.tm<=0){m.st='wind';m.sT=.6}}else if(m.tm<=0){m.dir*=-1;m.tm=rnd(2,4)}m.vx=m.st==='wind'?0:m.dir*sp}}
 else if(m.ai==='bat'){let ty=near?P.y-30+Math.sin(T*3+m.anim)*30:280+Math.sin(m.anim)*60;if(MT[m.type].dive){if(m.dive>0){m.dive-=dt;ty=P.y-20;m.vx+=((Math.sign(dx)||1)*sp*3-m.vx)*dt*6}else if(near&&adx<300&&(m.dcd=(m.dcd||rnd(1,3))-dt)<=0){m.dive=.7;m.dcd=rnd(2.5,4)}}if(near)m.dir=Math.sign(dx)||1;else if(m.tm<=0){m.dir*=-1;m.tm=rnd(2,4)}
@@ -396,12 +424,13 @@ else if(m.ai==='bat'){let ty=near?P.y-30+Math.sin(T*3+m.anim)*30:280+Math.sin(m.
  else if(m.ai==='mimic'){if(m.st==='reveal'){m.sT-=dt;m.vx=0;m.dir=Math.sign(dx)||1;if(m.sT<=0){m.st='lunge';m.sT=.5;m.vx=m.dir*560;m.vy=-260}}
   else if(m.st==='lunge'){m.sT-=dt;if(m.sT<=0){m.ai='golem';m.st='idle';m.tm=.8}}
   else{m.st='disguise';m.vx=0;if(P.deadT<=0&&adx<150&&Math.abs(P.y-m.y)<130){m.st='reveal';m.sT=.55;sfx('hurt')}}}
+ else if(m.ai==='crab')updCrab(m,dt,dx,adx,near,sp);else if(m.ai==='gull')updGull(m,dt,dx,adx,near,sp);else if(m.ai==='jelly')updJelly(m,dt,dx,adx,near,sp);
  else if(m.ai==='mirror')updMirror(m,dt,dx);
  else if(m.boss)updBoss(m,dt,dx,sp);
  if(!m.fly){m.vy+=GRAV*dt;moveBody(m,dt);if(m.x<z.x0+20||m.x>z.x1-20){m.x=clamp(m.x,z.x0+20,z.x1-20);m.dir*=-1;m.vx=-m.vx}}
- if(m.hitCd<=0&&P.deadT<=0&&m.st!=='disguise'&&m.st!=='reveal'&&over(rect(m),rect(P))){lastHurt=0;hurtP(m.atk,m.x);m.hitCd=.9*(m.af&&m.af.includes('hasty')?.7:1);if(lastHurt&&m.af&&m.af.includes('vamp'))m.hp=Math.min(m.mhp,m.hp+lastHurt*.15)}
+ if(m.hitCd<=0&&P.deadT<=0&&m.st!=='disguise'&&m.st!=='reveal'&&over(rect(m),rect(P))){lastHurt=0;hurtP(m.atk*(m.chg>0||m.st==='charge'?1.6:1),m.x);m.hitCd=.9*(m.af&&m.af.includes('hasty')?.7:1);if(lastHurt&&m.af&&m.af.includes('vamp'))m.hp=Math.min(m.mhp,m.hp+lastHurt*.15)}
 }
-function updBoss(m,dt,dx,sp){
+function updBoss(m,dt,dx,sp){if(m.type==='colossus'){updColossus(m,dt,dx,sp);return}
  const rage=m.hp<m.mhp*.5?1.35:1;m.sT-=dt;
  if(m.type==='shadow')updShadow(m,dt);if(m.st==='idle'||m.st==='walk'){m.dir=Math.sign(dx)||1;m.vx=m.dir*sp*rage*.8;if(m.sT<=0){const r=Math.random();const z=ZONES[m.z];if(r<.4){m.st='prep';m.sT=.55;m.vx=0;m.tx=clamp(P.x,z.x0+70,z.x1-70)}else if(r<.75){m.st='wind';m.sT=.7;m.vx=0;m.cl=480*rage*.8}else{m.st='walk';m.sT=1.5}}}
  else if(m.st==='prep'){m.vx=0;if(m.sT<=0){m.st='leap';m.vy=-620;m.vx=clamp((m.tx-m.x)/.83,-560,560);m.sT=2}}
@@ -636,7 +665,7 @@ $('bSwitch').onclick=()=>{save();closeAll();state='title';P=null;mobs.length=pro
 const tb=(k,t)=>'<img class="tico" src="'+isrc(k)+'" alt=""><span class="tl">'+t+'</span>';
 function updBadge(){if(!P)return;{const bp=P.pts+Math.max(0,skFree());$('bStats').innerHTML=tb('ico_book','Stats')+(bp?'<span class="badge">'+bp+'</span>':'')}$('bSet').innerHTML=tb('ico_gear','Settings');$('bQuest').innerHTML=tb('ico_quest','Quests')+(qReady()?'<span class="badge">!</span>':'');$('bShop').innerHTML=tb('ico_bagsack','Shop');$('bBag').innerHTML=tb('ico_satchel','Bag');$('bEquip').innerHTML=tb('ico_saber','Equip');$('bMap').innerHTML=tb('ico_map','Map');$('bCourse').innerHTML=tb('ico_cap','Course')+'<span class="badge">!</span>';$('bCourse').hidden=!(P.cls==='fresh'&&P.lv>=10)}
 let shopTab='buy',sellArm=0,shopMode='academy';
-const PRICE=[0,1200,4000,9000,18000,24000,40000,70000,110000],REQ=[1,5,10,15,20,25,30,35,40];
+const PRICE=[0,1200,4000,9000,18000,24000,40000,70000,110000,170000,260000],REQ=[1,5,10,15,20,25,30,35,40,45,50];
 function shopItems(){if(shopMode!=='academy'){const SH=MAPS[shopMode].shop,v=SH.bulk?[{k:'pot10',name:'Potion ×10',txt:'Ten potions, a little cheaper',cost:230,ico:'ico_potion'},{k:'eth10',name:'Ether ×10',txt:'Ten ethers, a little cheaper',cost:360,ico:'ico_ether'}]:[];if(SH.shard10)v.push({k:'shard10',name:'Star Shard ×10',txt:'Ten upgrade shards, a little cheaper',cost:1800,ico:'ico_shard'});
   for(const t of SH.tiers){v.push({k:'w'+t,name:TIER[t]+' '+WN[P.cls],txt:'ATK +'+(4+t*7)+' · needs Lv '+REQ[t],cost:PRICE[t],lv:REQ[t],ico:'ico_'+ICO_W[P.cls],t});v.push({k:'c'+t,name:TIER[t]+' Pendant',txt:'ATK +'+Math.round(2+t*3.5)+' · DEF +'+Math.round(1+t*2.2)+' · HP +'+(15+t*28)+' · needs Lv '+REQ[t],cost:PRICE[t],lv:REQ[t],ico:'ico_pendant',t})}return v}
  const o=[{k:'pot',name:'Potion',txt:'Restores 40% HP',cost:25,ico:'ico_potion'},{k:'eth',name:'Ether',txt:'Restores 50% SP',cost:40,ico:'ico_ether'},{k:'shard',name:'Star Shard',txt:'Upgrade material for gear (open your Bag)',cost:200,ico:'ico_shard'}];
@@ -732,7 +761,7 @@ function showToast(){const t=$('toast');clearTimeout(toastT);toastT=null;let it;
 
 /* ---------- boss rush ---------- */
 const RT=[{n:'Normal',lv:15,ml:18,gold:3000,sh:10,it:5,up:0},{n:'Hard',lv:25,ml:28,gold:9000,sh:25,it:6,up:2},{n:'Nightmare',lv:35,ml:38,gold:25000,sh:60,it:6,up:4}];
-const RW=[{name:'Library Guardians',m:['golem','golem','golem']},{name:'The Old Bell',m:['boss']},{name:'Lanternfall Vanguard',m:['sentinel','sentinel','wisp','wisp','frog']},{name:'Moonlit Chimera',m:['chimera']},{name:"The Headmaster's Shadow",m:['shadow'],f:.6},{name:'Final Exam',m:['boss','chimera'],f:.65}];
+const RW=[{name:'Library Guardians',m:['golem','golem','golem']},{name:'The Old Bell',m:['boss']},{name:'Lanternfall Vanguard',m:['sentinel','sentinel','wisp','wisp','frog']},{name:'Moonlit Chimera',m:['chimera']},{name:"The Headmaster's Shadow",m:['shadow'],f:.6},{name:'The Brass Colossus',m:['colossus'],f:.6},{name:'Final Exam',m:['boss','chimera'],f:.65}];
 const RUSH={active:false,done:false,tier:0,wave:0,t:0,next:0,from:null};
 const fmtT=t=>{t=Math.floor(t);return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')};
 function startRush(tier){if(P.lv<RT[tier].lv)return;if(MAP!==AR())RUSH.from={map:MAP,x:P.x};
@@ -744,10 +773,12 @@ function spawnWave(){const T=RT[RUSH.tier],w=RW[RUSH.wave];RUSH.wave++;const n=w
 function addMark(x,r,t,dmg,kind){marks.push({x:clamp(x,40,WORLD-40),r,t,max:t,dmg,kind})}
 function updMarks(dt){for(let i=marks.length-1;i>=0;i--){const k=marks[i];k.t-=dt;if(k.t>0)continue;
   if(P.deadT<=0&&Math.abs(P.x-k.x)<k.r&&P.y>FLOOR-170){hurtP(k.dmg,k.x);if(k.kind==='frost')P.slowT=2}
+  if(k.kind==='bolt'){zap(k.x);if(k.mob)for(const m of mobs){if(m.dead||m.boss||Math.abs(m.x-k.x)>k.r+m.w/2||m.y<FLOOR-170)continue;const d=Math.max(1,Math.round(m.mhp*.12));m.hp-=d;m.flash=.1;nums.push({x:m.x,y:m.y-m.h-6,t:d,life:.8,col:'#ffe45c'});if(m.hp<=0)killMob(m)}marks.splice(i,1);continue}
+  if(k.kind==='steam'){for(let q=0;q<16;q++)fx.push({k:'p',x:k.x+rnd(-k.r,k.r)*.7,y:FLOOR-rnd(0,20),vx:rnd(-30,30),vy:-rnd(260,520),life:.55,max:.55,c:q%3?'#f3f3f8':'#c9d6e8',s:6});marks.splice(i,1);continue}
   if(k.kind==='star'||k.kind==='frost'){anim('ember',k.x,FLOOR,1.6,.45);shake=Math.max(shake,.15)}else for(let q=0;q<8;q++)fx.push({k:'p',x:k.x+rnd(-k.r,k.r),y:FLOOR-rnd(0,30),vx:0,vy:-120,life:.35,max:.35,c:'#c98aff',s:4});marks.splice(i,1)}}
-function drawMarks(){for(const k of marks){const x=k.x-cam,f=clamp(k.t/k.max,0,1),a=.25+.2*Math.sin(T*18);if(RA('fx_tele')){ctx.save();ctx.globalAlpha=.75+.25*Math.sin(T*18);frC('fx_tele',T*8,x,FLOOR,k.r*2.2/276);ctx.restore()}ctx.save();ctx.fillStyle='rgba(255,60,60,'+a+')';ctx.beginPath();ctx.ellipse(x,FLOOR,k.r,12,0,0,7);ctx.fill();ctx.strokeStyle='rgba(255,90,90,.9)';ctx.lineWidth=3;ctx.stroke();
+function drawMarks(){for(const k of marks){const x=k.x-cam,f=clamp(k.t/k.max,0,1),a=.25+.2*Math.sin(T*18);if(k.kind==='bolt'){ctx.save();ctx.fillStyle='rgba(255,228,92,'+(a+.1)+')';ctx.beginPath();ctx.ellipse(x,FLOOR,k.r,12,0,0,7);ctx.fill();ctx.strokeStyle='#ffe45c';ctx.lineWidth=3;ctx.stroke();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,FLOOR,k.r*f,12*f,0,0,7);ctx.stroke();ctx.restore();continue}if(RA('fx_tele')){ctx.save();ctx.globalAlpha=.75+.25*Math.sin(T*18);frC('fx_tele',T*8,x,FLOOR,k.r*2.2/276);ctx.restore()}ctx.save();ctx.fillStyle='rgba(255,60,60,'+a+')';ctx.beginPath();ctx.ellipse(x,FLOOR,k.r,12,0,0,7);ctx.fill();ctx.strokeStyle='rgba(255,90,90,.9)';ctx.lineWidth=3;ctx.stroke();
   ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,FLOOR,k.r*f,12*f,0,0,7);ctx.stroke();
-  if(f<.5){const yy=FLOOR-260*f*2;if(k.kind==='arrow')frC('arrow',0,x,yy,.5,Math.PI/2);else if(artReady)frC('meteor',0,x,yy,.6)}ctx.restore()}}
+  if(k.kind==='steam'){ctx.fillStyle='rgba(240,240,255,.35)';for(let q=0;q<3;q++)ctx.fillRect(x-12+q*10+Math.sin(T*9+q)*3,FLOOR-14-((T*60+q*9)%18),6,6)}else if(f<.5){const yy=FLOOR-260*f*2;if(k.kind==='arrow')frC('arrow',0,x,yy,.5,Math.PI/2);else if(artReady)frC('meteor',0,x,yy,.6)}ctx.restore()}}
 function addPZ(o){o.tt=0;o.skm=curMul;o.max=o.t;pz.push(o)}
 function updPZ(dt){for(let i=pz.length-1;i>=0;i--){const z=pz[i];z.t-=dt;z.tt-=dt;
   if(z.pull)for(const m of mobs){if(m.dead||m.boss)continue;const dx=z.x-m.x;if(Math.abs(dx)<z.r&&Math.abs(z.y-m.y)<z.r)m.x+=Math.sign(dx)*Math.min(Math.abs(dx),z.pull*dt)}
@@ -763,6 +794,124 @@ function updShadow(m,dt){PORT=MAP===AR()?PORTA:PORT0;m.castT=(m.castT||0)-dt;con
  if(ph>=2){m.k2=(m.k2||3)-dt;if(m.k2<=0){m.k2=ph===3?3.2:4.5;m.castT=.6;for(const o of [-110,0,110])addMark(P.x+o+rnd(-20,20),48,.95,m.atk*1.0,'arrow')}}
  if(ph>=3){m.k3=(m.k3||2)-dt;if(m.k3<=0){m.k3=4.5;m.castT=.7;addMark(P.x,78,1.15,m.atk*1.4,'star');addMark(P.x+(Math.random()<.5?-180:180),78,1.35,m.atk*1.4,'star')}
   m.tp=(m.tp||5)-dt;if(m.tp<=0&&m.st!=='leap'&&m.st!=='prep'&&m.onG){m.tp=6;const px=PORT.filter(v=>Math.abs(v-m.x)>150)[Math.floor(Math.random()*2)]||PORT[1];for(let q=0;q<14;q++)fx.push({k:'p',x:m.x,y:m.y-m.h/2,vx:rnd(-200,200),vy:rnd(-200,100),life:.5,max:.5,c:'#8a4ad6',s:5});if(IMG.fx_shtp)anim('fx_shtp',m.x,FLOOR-80,.7,.5,{c:1});m.x=px;m.vx=0;m.st='walk';m.sT=.7;anim(IMG.fx_shtp?'fx_shtp':'fx_upgrade',px,FLOOR-80,IMG.fx_shtp?.7:1.1,.6,{c:1})}}}
+
+/* ---------- 17. Clocktide Harbor, Act 1 ---------- */
+const HB1=()=>MI('harbor1');
+const qIdx=f=>QUESTS.findIndex(f),qPast=i=>i>=0&&((P.q||0)>i||((P.q||0)===i&&qReady()));
+const shadowDone=()=>!!P&&(P.thesis||qPast(qIdx(q=>q.kill==='shadow')));
+const colossusDone=()=>!!P&&qPast(qIdx(q=>q.kill==='colossus'));
+const inZ=k=>{const z=ZONES[zoneAt(P.x)];return !!(z&&z[k])};
+/* wind gusts (Rigging) and lightning strikes (Lighthouse) */
+const GU={t:7,on:0,dir:1,warned:0};let LT=3,flashT=0;
+function updHarbor(dt){flashT=Math.max(0,flashT-dt);
+ if(inZ('gust')&&P.deadT<=0){if(GU.on>0){GU.on-=dt;if(!(P.dash>0))P.x=clamp(P.x+GU.dir*115*dt,15,WORLD-15);for(const p of proj)p.x+=GU.dir*170*dt;if(GU.on<=0)GU.t=rnd(7,9)}
+  else{GU.t-=dt;if(GU.t<=1.2&&!GU.warned){GU.warned=1;GU.dir=Math.random()<.5?-1:1;msg('A gust is coming '+(GU.dir>0?'→':'←'),'#dff8ff')}if(GU.t<=0){GU.on=2;GU.warned=0}}}
+ else{GU.on=0;GU.warned=0;GU.t=Math.max(GU.t,4)}
+ if(inZ('storm')&&P.deadT<=0){LT-=dt;if(LT<=0){const b=mobs.some(m=>m.boss&&!m.dead);LT=b?rnd(5,7):rnd(2.5,4);addMark(P.x+rnd(-260,260),52,1,CURVE.atk(48)*1.1,'bolt');marks[marks.length-1].mob=1}}}
+function zap(x){fx.push({k:'z',x,life:.3,max:.3,seed:Math.random()*99});flashT=Math.max(flashT,.12);shake=Math.max(shake,.15);sfx('hurt')}
+/* monster AIs */
+function updCrab(m,dt,dx,adx,near,sp){m.guardT=(m.guardT||0)-dt;m.gcd=(m.gcd==null?rnd(2,4):m.gcd)-dt;
+ if(m.st==='wind'){m.vx=0;m.sT-=dt;if(m.sT<=0){m.st='idle';m.tm=1.4;m.slamT=.3;if(Math.abs(P.x-(m.x+m.dir*30))<70&&Math.abs(P.y-m.y)<50)hurtP(m.atk*1.3,m.x)}return}
+ if(m.guardT>0){m.vx=0;m.dir=Math.sign(dx)||m.dir;return}
+ if(near&&m.gcd<=0){m.gcd=rnd(3,5);m.guardT=1.5;m.vx=0;m.dir=Math.sign(dx)||1;return}
+ if(near){m.dir=Math.sign(dx)||1;if(adx<62&&m.tm<=0){m.st='wind';m.sT=.45;m.vx=0;return}}else if(m.tm<=0){m.dir*=-1;m.tm=rnd(2,4)}
+ m.vx=m.dir*sp*(near?1:.6)}
+function updGull(m,dt,dx,adx,near,sp){const z=ZONES[m.z];m.dcd=(m.dcd==null?rnd(2,4):m.dcd)-dt;
+ if(m.st==='cry'){m.sT-=dt;m.vx*=.85;m.vy*=.85;if(m.sT<=0){m.st='dive';m.sT=1;const ax=m.tx-m.x,ay=m.ty-m.y,d=Math.hypot(ax,ay)||1;m.vx=ax/d*640;m.vy=ay/d*640;m.dir=Math.sign(m.vx)||m.dir}}
+ else if(m.st==='dive'){m.sT-=dt;if(m.sT<=0||m.y>=FLOOR-14){m.st='idle';m.dcd=rnd(2.5,4)}}
+ else{const ty=near?Math.max(80,P.y-150)+Math.sin(T*2+m.anim)*20:200+Math.sin(m.anim)*50,tx=near?P.x+Math.sin(T*.9+m.anim)*140:m.x+m.dir*80;
+  if(!near&&m.tm<=0){m.dir*=-1;m.tm=rnd(2,4)}m.vx+=((Math.sign(tx-m.x)||1)*Math.min(sp,Math.abs(tx-m.x)*2)-m.vx)*dt*2.5;m.vy+=((ty-m.y)*2-m.vy)*dt*3;if(Math.abs(m.vx)>5)m.dir=Math.sign(m.vx);
+  if(near&&adx<360&&m.dcd<=0){m.st='cry';m.sT=.55;m.tx=P.x;m.ty=P.y-26;sfx('jump');nums.push({x:m.x,y:m.y-m.h,t:'!',life:.6,col:'#ffd23f'})}}
+ m.x=clamp(m.x+m.vx*dt,z.x0+20,z.x1-20);m.y=clamp(m.y+m.vy*dt,70,FLOOR-10)}
+function updJelly(m,dt,dx,adx,near,sp){const z=ZONES[m.z];m.chg=(m.chg||0)-dt;m.pt=(m.pt==null?rnd(2,4):m.pt)-dt;
+ if(m.st==='charge'){m.sT-=dt;m.vx*=.9;m.vy*=.9;if(m.sT<=0){m.st='idle';m.pt=4;m.chg=.5;ring(m.x,m.y-m.h/2,120,'#ffe45c',.35);for(let q=0;q<12;q++){const a=q/12*6.28;fx.push({k:'p',x:m.x+Math.cos(a)*30,y:m.y-m.h/2+Math.sin(a)*30,vx:Math.cos(a)*320,vy:Math.sin(a)*320,life:.3,max:.3,c:'#ffe45c',s:4})}
+   if(P.deadT<=0&&Math.hypot(P.x-m.x,P.y-30-(m.y-m.h/2))<120)hurtP(m.atk*1.1,m.x)}}
+ else{const tx=near?P.x:m.x+m.dir*60,ty=near?P.y-50+Math.sin(T*1.5+m.anim)*25:240+Math.sin(m.anim)*40;if(!near&&m.tm<=0){m.dir*=-1;m.tm=rnd(2,4)}
+  m.vx+=((Math.sign(tx-m.x)||1)*Math.min(sp,Math.abs(tx-m.x))-m.vx)*dt*1.5;m.vy+=((ty-m.y)*1.2-m.vy)*dt*2;if(near&&adx<300&&m.pt<=0){m.st='charge';m.sT=.9}}
+ if(Math.abs(dx)>4)m.dir=Math.sign(dx);m.x=clamp(m.x+m.vx*dt,z.x0+20,z.x1-20);m.y=clamp(m.y+m.vy*dt,90,FLOOR-10)}
+/* Brass Colossus (section 5.3) */
+function updColossus(m,dt,dx,sp){const z=ZONES[m.z],X0=z.x0+70,X1=z.x1-70,ph=m.hp<m.mhp*.3?3:m.hp<m.mhp*.6?2:1;m.sT-=dt;m.furn=(m.furn||0)-dt;
+ if(ph>(m.ph||1)){m.ph=ph;shake=.45;sfx('boss');msg(ph===2?'Phase 2 · "Overcharge!" Its shoulder coils crackle…':'Phase 3 · "Overheat!" The furnace is glowing white-hot!','#ffd23f');
+  if(ph===2)for(const k of [-1,1]){const x=clamp(m.x+k*260,X0,X1),c=spawnMob('automaton',m.z,x,m.rush?m.lvl:48);if(m.rush){c.rush=1;c.y=FLOOR}c.aggro=1;anim('fx_upgrade',x,FLOOR-60,.9,.6,{c:1})}
+  if(ph===3){m.spd*=1.25;m.ft=4}}
+ const f3=ph===3?.75:1;
+ if(ph>=2){m.k2=(m.k2==null?3:m.k2)-dt;if(m.k2<=0){m.k2=ph===3?5:4.2;for(const o of [-140,0,140])addMark(P.x+o+rnd(-20,20),50,1,m.atk*1,'bolt')}}
+ if(ph===3){m.vq=(m.vq==null?2:m.vq)-dt;if(m.vq<=0){m.vq=8;const n=6,w=(X1-X0)/n;for(let k=0;k<n;k++)addMark(X0+w*(k+.5),62,1.1+k*.38,m.atk*1.3,'steam');msg('The vents are erupting left to right!','#ffb0b0')}
+  m.ft=(m.ft==null?4:m.ft)-dt;if(m.ft<=0){m.ft=12;m.furn=3;msg('The furnace door swings open! Hit it for double damage!','#ffd23f');sfx('chest')}}
+ if(m.st==='idle'||m.st==='walk'){m.dir=Math.sign(dx)||1;m.vx=m.dir*sp*.7;if(m.sT<=0){const adx=Math.abs(dx);
+   if(adx<300&&Math.random()<.65){m.st='wind';m.sT=.8*f3;m.vx=0;m.cl=270}else{m.st='stomp';m.sT=.45;m.vx=0}}}
+ else if(m.st==='wind'){m.vx=0;if(m.sT<=0){m.st='walk';m.sT=1.3*f3;m.slamT=.35;shake=.3;anim('shock',m.x+m.dir*150,m.y+4,1,.4,{flip:m.dir<0});
+   const px=P.x-m.x;if(P.deadT<=0&&Math.sign(px)===m.dir&&Math.abs(px)<m.cl&&Math.abs(P.y-m.y)<100)hurtP(m.atk*1.5,m.x)}}
+ else if(m.st==='stomp'){m.vx=0;if(m.sT<=0){m.st='walk';m.sT=1.5*f3;m.slamT=.4;shake=.25;for(const o of [-170,0,170])addMark(clamp(P.x+o,X0,X1),55,1,m.atk*1.2,'steam')}}
+ else{m.st='walk';m.sT=1}
+ m.x=clamp(m.x,X0,X1)}
+/* NPCs and the lamp */
+const WREN='Captain Wren',WA='npc_wren',OTT='Ottilie Spanner',OA='npc_ottilie';
+function flyTo(i){const h=i===HB1();travel(i,h?MAPS[i].spawn:790,h?'The Starling glides down onto Brassbell Wharf. Clocktide Harbor!':'The Starling touches down at the Skyward Dock. Home sweet school.')}
+function openWren(){const home=MAP===0;
+ if(home&&P.lv<40){say([{who:WREN,art:WA,t:'Exchange student? Not yet, cadet. The Starling only takes Lv 40 students. Hold on to your hat until then.'}]);return}
+ if(home&&!(P.sc&&P.sc.board)){scene('board',[{who:WREN,art:WA,t:'Exchange student? Splendid. Hold on to your hat. And your lunch.'},{who:WREN,art:WA,t:"Professor Lumen's letter said you'd come. A ghost writing letters! Starbell never changes."}],()=>flyTo(HB1()));return}
+ const line=home?'Clocktide Harbor, then? All aboard!':P.lamp?['That eye, though. Ottilie is building us a diving keel.','Down there is where the storm lives. We\'ll be ready soon.'][Math.floor(Math.random()*2)]:colossusDone()?'The lamp still needs lighting. Top of the lighthouse, big brass lever. Can\'t miss it.':['The Stormglass lamp went dark the night the storm came. Nobody\'s been up there since.','Gulls stole my sandwich again. And my map. And, briefly, my hat.','Ottilie says everything in her shop is safe. Ottilie also says that about the blue lever.'][Math.floor(Math.random()*3)];
+ say([{who:WREN,art:WA,t:line,opts:[{t:home?'Fly to Clocktide Harbor':'Fly home to Starbell Academy',f:()=>flyTo(home?HB1():0)},{t:'Not now'}]}])}
+function openOttilie(){P.talked=P.talked||{};P.talked.ottilie=1;qCheck();
+ if(!(P.sc&&P.sc.ottilie)){scene('ottilie',[{who:OTT,art:OA,t:'Everything here is perfectly safe. Mostly. Don\'t touch the blue lever.'},{who:OTT,art:OA,t:'Ottilie Spanner, chief tinkerer. Tidebrass and Stormglass gear, fresh off the anvil. Bring gold. Bring cogs, if you find any.'}],()=>openShop(MAP));return}
+ const q=curQ(),t=q.collect==='cog'?'Brass Cogs! Twelve, please. They fall off anything clanky round here.':['Welcome back, '+pfirst()+'. Mind the lever.','Tidebrass for the brave, Stormglass for the very brave.','If it ticks, I can fix it. If it explodes, I can mostly fix it.'][Math.floor(Math.random()*3)];
+ say([{who:OTT,art:OA,t}],()=>openShop(MAP))}
+function useLamp(){if(P.lamp){say([{t:'The Stormglass lamp burns bright. Far below the clouds, something is still watching.'}]);return}
+ if(!colossusDone()){msg('The lamp is cold and dark. The storm engine that powered it has gone… walkabout.','#ffb0b0');return}
+ P.lamp=1;qCheck();sfx('chest');shake=.3;save();scene('lamp',[{t:'You heave the big brass lever. The Stormglass lamp roars to life, and its beam cuts straight down through the clouds…'},{t:'Far, far below, something blinks. A giant yellow eye.'},{who:WREN,art:WA,t:"(over the voice-pipe) That's no seagull. We're going down there."}])}
+/* drawing: airship, lamp, monster overlays, gusts, code backgrounds and tiles */
+function drawAirship(x,y){const b=Math.round(Math.sin(T*1.6)*3);y+=b;ctx.save();
+ ctx.strokeStyle='#5a3a22';ctx.lineWidth=2;for(const o of [-50,-18,18,50]){ctx.beginPath();ctx.moveTo(x+o*.9,y-92);ctx.lineTo(x+o*.6,y-38);ctx.stroke()}
+ ctx.fillStyle='#24205a';ctx.beginPath();ctx.ellipse(x,y-130,92,48,0,0,7);ctx.fill();ctx.fillStyle='#3a3480';ctx.beginPath();ctx.ellipse(x-8,y-140,78,34,0,0,7);ctx.fill();
+ ctx.fillStyle='#f2c14e';for(let k=0;k<7;k++){const sx=x-60+k*20+(k%2)*4,sy=y-150+((k*37)%30);ctx.fillRect(sx-1,sy-4,3,9);ctx.fillRect(sx-4,sy-1,9,3)}
+ ctx.fillStyle='#d9a441';ctx.fillRect(x-92,y-132,184,4);
+ ctx.fillStyle='#7a4a26';ctx.beginPath();ctx.moveTo(x-78,y-40);ctx.lineTo(x+78,y-40);ctx.lineTo(x+58,y-8);ctx.lineTo(x-58,y-8);ctx.closePath();ctx.fill();ctx.fillStyle='#5a3418';ctx.fillRect(x-70,y-30,140,4);
+ ctx.fillStyle='#f3e7c9';for(let k=0;k<4;k++){ctx.beginPath();ctx.arc(x-42+k*28,y-22,5,0,7);ctx.fill()}ctx.fillStyle='#d9a441';ctx.beginPath();ctx.moveTo(x+78,y-40);ctx.lineTo(x+104,y-50);ctx.lineTo(x+86,y-30);ctx.fill();
+ ctx.fillStyle='#c8423a';ctx.fillRect(x+66,y-74,3,34);ctx.beginPath();ctx.moveTo(x+69,y-74);ctx.lineTo(x+92+Math.sin(T*4)*3,y-68);ctx.lineTo(x+69,y-62);ctx.fill();
+ ctx.fillStyle='#8a6a44';ctx.fillRect(x-100,FLOOR-14-b*0,60,8);ctx.restore()}
+function drawLamp(sx,y){ctx.save();const lit=!!P.lamp,col=colossusDone();ctx.fillStyle='#3a3a4a';ctx.fillRect(sx-30,y-14,60,14);ctx.fillStyle='#d9a441';ctx.fillRect(sx-24,y-84,48,70);ctx.fillStyle=lit?'#fff6b0':col&&Math.sin(T*9)>.6?'#a08a50':'#2a3040';ctx.fillRect(sx-18,y-78,36,52);
+ ctx.fillStyle='#d9a441';ctx.beginPath();ctx.moveTo(sx-30,y-84);ctx.lineTo(sx,y-108);ctx.lineTo(sx+30,y-84);ctx.fill();ctx.fillStyle='#5ad1c6';ctx.fillRect(sx+30,y-50,6,30);ctx.fillStyle='#c8423a';ctx.fillRect(sx+28,y-56,10,8);
+ if(lit){const a=T*.8;ctx.globalAlpha=.25+.08*Math.sin(T*3);ctx.fillStyle='#fff6b0';ctx.beginPath();ctx.moveTo(sx,y-52);ctx.lineTo(sx+Math.cos(a)*900,y-52+Math.sin(a)*120-60);ctx.lineTo(sx+Math.cos(a)*900,y-52+Math.sin(a)*120+60);ctx.fill();ctx.globalAlpha=.35;ctx.beginPath();ctx.arc(sx,y-52,46,0,7);ctx.fill()}ctx.restore()}
+function drawMobFx(m,sx,sy){ctx.save();
+ if(m.guardT>0){ctx.strokeStyle='#ffe9a8';ctx.lineWidth=4;ctx.globalAlpha=.7+.2*Math.sin(T*14);ctx.beginPath();const cx=sx+m.dir*m.w*.45;ctx.arc(cx,sy-m.h/2,m.h*.6,m.dir>0?-1.1:Math.PI-1.1+0,m.dir>0?1.1:Math.PI+1.1);ctx.stroke()}
+ if(m.ai==='gull'&&m.st==='cry'){ctx.globalAlpha=.55+.3*Math.sin(T*20);ctx.strokeStyle='#ff5a5a';ctx.lineWidth=3;ctx.setLineDash([10,8]);ctx.beginPath();ctx.moveTo(sx,sy-m.h/2);ctx.lineTo(m.tx-cam,m.ty);ctx.stroke();ctx.setLineDash([])}
+ if(m.ai==='jelly'){const c=m.st==='charge';if(c||m.chg>0){const f=c?1-m.sT/.9:1;ctx.globalAlpha=c?.18+.25*f:.35;ctx.fillStyle='#ffe45c';ctx.beginPath();ctx.arc(sx,sy-m.h/2,c?120*f:m.w*.8,0,7);ctx.fill();ctx.globalAlpha=.8;ctx.strokeStyle='#ffe45c';ctx.lineWidth=2;if(c){ctx.beginPath();ctx.arc(sx,sy-m.h/2,120,0,7);ctx.stroke()}}
+  ctx.globalAlpha=.9;ctx.strokeStyle='#ffe45c';ctx.lineWidth=2;ctx.beginPath();for(let k=0;k<4;k++){const yy=sy-m.h*.6+k*6;ctx.moveTo(sx-6,yy);ctx.lineTo(sx+(k%2?6:-2),yy+3)}ctx.stroke()}
+ if(m.type==='colossus'){const by=sy-m.h*.42,o=m.furn>0;ctx.globalAlpha=o?.75+.25*Math.sin(T*16):.45+.15*Math.sin(T*4);ctx.fillStyle=o?'#fff2a8':'#ff8a3d';ctx.beginPath();ctx.arc(sx,by,o?24:16,0,7);ctx.fill();ctx.globalAlpha*=.4;ctx.beginPath();ctx.arc(sx,by,o?40:26,0,7);ctx.fill();
+  if(o){ctx.globalAlpha=1;ctx.font='700 16px "Starbell","StarbellNum",monospace';ctx.textAlign='center';ctx.fillStyle='#1b1633';ctx.fillText('×2',sx+1,by-25);ctx.fillStyle='#ffd23f';ctx.fillText('×2',sx,by-26)}
+  if((m.ph||1)>=2){ctx.globalAlpha=.9;ctx.strokeStyle='#ffe45c';ctx.lineWidth=2;for(const s of [-1,1]){ctx.beginPath();let x=sx+s*m.w*.42,y=sy-m.h*.85;ctx.moveTo(x,y);for(let k=0;k<3;k++){x+=rnd(-8,8);y-=rnd(6,12);ctx.lineTo(x,y)}ctx.stroke()}}}
+ ctx.restore()}
+function drawKettle(sx){const y=FLOOR;ctx.save();ctx.fillStyle='#5a3a22';ctx.fillRect(sx-62,y-14,124,14);ctx.fillStyle='#ff8a3d';ctx.globalAlpha=.6+.3*Math.sin(T*7);ctx.fillRect(sx-30,y-12,60,8);ctx.globalAlpha=1;
+ ctx.fillStyle='#b8862e';ctx.beginPath();ctx.ellipse(sx,y-62,58,50,0,0,7);ctx.fill();ctx.fillStyle='#d9a441';ctx.beginPath();ctx.ellipse(sx-8,y-70,46,38,0,0,7);ctx.fill();ctx.fillStyle='#f2d27a';ctx.fillRect(sx-30,y-92,12,22);
+ ctx.fillStyle='#b8862e';ctx.beginPath();ctx.moveTo(sx+44,y-70);ctx.lineTo(sx+92,y-112);ctx.lineTo(sx+100,y-104);ctx.lineTo(sx+54,y-48);ctx.fill();ctx.fillRect(sx-20,y-122,40,14);ctx.fillStyle='#5ad1c6';ctx.beginPath();ctx.arc(sx,y-128,8,0,7);ctx.fill();
+ ctx.strokeStyle='#8a5a1a';ctx.lineWidth=7;ctx.beginPath();ctx.arc(sx-6,y-104,40,Math.PI*1.1,Math.PI*1.9);ctx.stroke();ctx.fillStyle='#8a5a1a';for(const k of [-34,-12,10,32])ctx.fillRect(sx+k-2,y-40,4,4);ctx.restore()}
+function drawGust(){if(!(GU.on>0)&&!(GU.warned))return;ctx.save();const on=GU.on>0;ctx.strokeStyle='#ffffff';ctx.lineWidth=2;for(let k=0;k<(on?26:8);k++){const y=60+hash(k)*380,sp=on?900:300,x=((hash(k+7)*W+T*sp*GU.dir)%W+W)%W;ctx.globalAlpha=(on?.5:.25)*(.5+.5*hash(k+3));ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-GU.dir*(40+hash(k+1)*60),y);ctx.stroke()}ctx.restore()}
+function drawBolt(f){const a=clamp(f.life/f.max,0,1),x=f.x-cam;ctx.save();ctx.globalAlpha=a;for(const [c,w] of [['#ffe45c',7],['#ffffff',3]]){ctx.strokeStyle=c;ctx.lineWidth=w;ctx.beginPath();let px=x,py=0;ctx.moveTo(px,py);for(let k=1;k<=8;k++){py=FLOOR*k/8;px=x+(k<8?(hash(f.seed+k)-.5)*50:0);ctx.lineTo(px,py)}ctx.stroke()}ctx.restore()}
+function drawHarborBg(z,par){const fb=z.fb,cloud=(y,c,a)=>{ctx.fillStyle=c;par(a,170,(x,i)=>{ctx.beginPath();ctx.ellipse(x,y+hash(i)*14,110+hash(i+2)*50,34+hash(i+5)*14,0,0,7);ctx.fill()})};
+ if(fb==='light'){ctx.fillStyle='#1d2a4a';par(.05,320,(x,i)=>{ctx.beginPath();ctx.ellipse(x,60+hash(i)*70,190,50,0,0,7);ctx.fill()});
+  par(.15,1400,(x,i)=>{const tx=x+500;ctx.fillStyle='#e8e4dc';ctx.beginPath();ctx.moveTo(tx-46,FLOOR);ctx.lineTo(tx-26,140);ctx.lineTo(tx+26,140);ctx.lineTo(tx+46,FLOOR);ctx.fill();ctx.fillStyle='#c8423a';for(let k=0;k<4;k++){const y=200+k*70;ctx.fillRect(tx-30-k*3,y,60+k*6,24)}
+   ctx.fillStyle='#2a3040';ctx.fillRect(tx-34,124,68,16);ctx.fillStyle=P&&P.lamp?'#fff6b0':'#3a4458';ctx.fillRect(tx-22,84,44,40);ctx.fillStyle='#d9a441';ctx.beginPath();ctx.moveTo(tx-30,84);ctx.lineTo(tx,58);ctx.lineTo(tx+30,84);ctx.fill();
+   if(P&&P.lamp){ctx.save();ctx.globalAlpha=.18;ctx.fillStyle='#fff6b0';const a=T*.8;ctx.beginPath();ctx.moveTo(tx,104);ctx.lineTo(tx+Math.cos(a)*700,104+Math.sin(a)*80-50);ctx.lineTo(tx+Math.cos(a)*700,104+Math.sin(a)*80+50);ctx.fill();ctx.restore()}});
+  cloud(430,'#2a3a5a',.3);ctx.strokeStyle='#9fb4d8';ctx.globalAlpha=.35;ctx.lineWidth=1.5;ctx.beginPath();for(let k=0;k<70;k++){const x=(hash(k)*W*1.2+T*120)%(W*1.2)-60,y=(hash(k+40)*H+T*700)%H;ctx.moveTo(x,y);ctx.lineTo(x-6,y+18)}ctx.stroke();ctx.globalAlpha=1;
+  if(flashT>0){ctx.fillStyle='rgba(255,250,220,'+(flashT*2.5).toFixed(2)+')';ctx.fillRect(0,0,W,H)}return}
+ ctx.fillStyle='#ffffffcc';par(.04,300,(x,i)=>{ctx.beginPath();ctx.ellipse(x,70+hash(i)*90,70,20,0,0,7);ctx.fill();ctx.beginPath();ctx.ellipse(x+40,60+hash(i)*90,40,16,0,0,7);ctx.fill()});
+ if(fb==='wharf'){par(.12,560,(x,i)=>{const y=230+hash(i)*40;ctx.fillStyle='#6a5a4a';ctx.beginPath();ctx.moveTo(x-110,y);ctx.lineTo(x+110,y);ctx.lineTo(x+40,y+70);ctx.lineTo(x-20,y+90);ctx.closePath();ctx.fill();ctx.fillStyle='#7ab86a';ctx.fillRect(x-112,y-6,224,8);
+   for(let k=0;k<3;k++){const hx=x-80+k*60,hh=30+hash(i*3+k)*24;ctx.fillStyle='#f3e7c9';ctx.fillRect(hx,y-6-hh,40,hh);ctx.fillStyle='#d9a441';ctx.beginPath();ctx.moveTo(hx-5,y-6-hh);ctx.lineTo(hx+20,y-22-hh);ctx.lineTo(hx+45,y-6-hh);ctx.fill();ctx.fillStyle='#5ad1c6';ctx.fillRect(hx+14,y-hh+4,10,10)}});
+  par(.22,760,(x,i)=>{const y=150+hash(i+9)*50+Math.sin(T+i)*4;ctx.fillStyle='#c8423a';ctx.beginPath();ctx.ellipse(x,y,48,20,0,0,7);ctx.fill();ctx.fillStyle='#f3e7c9';ctx.fillRect(x-46,y-2,92,4);ctx.fillStyle='#7a4a26';ctx.fillRect(x-22,y+24,44,10)})}
+ if(fb==='docks'){par(.25,480,(x,i)=>{const cx=x+200,cy=300+hash(i)*40,r=80+hash(i+1)*30,a=T*(i%2?.4:-.4);ctx.save();ctx.translate(cx,cy);ctx.rotate(a);ctx.fillStyle='#a8823a';for(let k=0;k<10;k++){ctx.rotate(Math.PI/5);ctx.fillRect(-12,-r-14,24,20)}ctx.beginPath();ctx.arc(0,0,r,0,7);ctx.fill();ctx.fillStyle='#7a5a24';ctx.beginPath();ctx.arc(0,0,r*.62,0,7);ctx.fill();ctx.fillStyle='#a8823a';for(let k=0;k<4;k++){ctx.rotate(Math.PI/4);ctx.fillRect(-6,-r*.62,12,r*1.24)}ctx.beginPath();ctx.arc(0,0,16,0,7);ctx.fill();ctx.restore()});
+  ctx.fillStyle='#4a5a66';par(.4,620,(x)=>{ctx.fillRect(x,140,14,FLOOR-140);ctx.fillRect(x,140,170,12);ctx.fillRect(x+150,152,3,90+Math.sin(T)*6);ctx.fillRect(x+138,240+Math.sin(T)*6,28,22)})}
+ if(fb==='rig'){par(.45,380,(x,i)=>{ctx.fillStyle='#6a4426';ctx.fillRect(x,0,16,FLOOR);for(const [y,w] of [[70,200],[190,240],[310,200]]){ctx.fillStyle='#6a4426';ctx.fillRect(x+8-w/2,y,w,8);const bl=Math.sin(T*1.3+i+y)*10;ctx.fillStyle='#f3e7c9';ctx.beginPath();ctx.moveTo(x+8-w/2+6,y+8);ctx.lineTo(x+8+w/2-6,y+8);ctx.quadraticCurveTo(x+8+w/2+bl,y+60,x+8+w/2-14,y+104);ctx.lineTo(x+8-w/2+14,y+104);ctx.quadraticCurveTo(x+8-w/2+bl,y+60,x+8-w/2+6,y+8);ctx.fill();ctx.fillStyle='#e6d4a8';ctx.fillRect(x+4,y+30,8,60)}
+   ctx.strokeStyle='#5a3a22';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x+8,20);ctx.lineTo(x+170,FLOOR);ctx.moveTo(x+8,20);ctx.lineTo(x-154,FLOOR);ctx.stroke()})}
+ cloud(fb==='rig'?458:440,'#ffffffdd',.3)}
+const PLK={wharf:['#8a6a44','#6a4a2a','#4a3420'],docks:['#7a5a3a','#5a4028','#3a2a18'],rig:['#a87a4a','#7a5432','#4a3420'],light:['#6a7890','#4a5468','#2a3040']};
+function codeGround(z,a,b){const c=PLK[z.fb]||[z.top,z.gr,'#0004'];ctx.fillStyle=c[1];ctx.fillRect(a-cam,FLOOR-2,b-a,H-FLOOR+2);ctx.fillStyle=c[0];ctx.fillRect(a-cam,FLOOR-4,b-a,10);
+ ctx.fillStyle=c[2];for(let x=Math.floor(a/48)*48;x<b;x+=48){ctx.fillRect(x-cam,FLOOR+6,2,H-FLOOR);ctx.fillRect(x-cam+6,FLOOR,4,4);if(z.fb==='light'){ctx.fillStyle='#d9a441';ctx.fillRect(x-cam,FLOOR+6,48,3);ctx.fillStyle=c[2]}}for(let y=FLOOR+22;y<H;y+=16)ctx.fillRect(a-cam,y,b-a,2)}
+function codePlat(p,z){const c=PLK[z.fb]||[z.top,z.gr,'#0004'],x=p.x-cam,y=p.y;
+ if(z.fb==='rig'){ctx.strokeStyle='#5a3a22';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y-26);ctx.quadraticCurveTo(x+p.w/2,y-12,x+p.w,y-26);ctx.stroke();for(let k=0;k<=p.w;k+=24){ctx.beginPath();ctx.moveTo(x+k,y-26+Math.sin(k/p.w*Math.PI)*12);ctx.lineTo(x+k,y);ctx.stroke()}}
+ if(z.fb==='light'){ctx.fillStyle=c[1];ctx.fillRect(x,y,p.w,10);ctx.strokeStyle=c[2];ctx.lineWidth=3;ctx.beginPath();for(let k=0;k+20<=p.w;k+=20){ctx.moveTo(x+k,y+10);ctx.lineTo(x+k+20,y+28);ctx.moveTo(x+k+20,y+10);ctx.lineTo(x+k,y+28)}ctx.stroke();ctx.fillStyle='#d9a441';ctx.fillRect(x,y,p.w,3);return}
+ ctx.fillStyle=c[0];ctx.fillRect(x,y,p.w,8);ctx.fillStyle=c[1];ctx.fillRect(x,y+8,p.w,6);ctx.fillStyle=c[2];for(let k=0;k<p.w;k+=20)ctx.fillRect(x+k,y,2,14);
+ if(z.fb==='docks'){ctx.fillStyle='#4a5a66';ctx.fillRect(x+6,y-200,2,200);ctx.fillRect(x+p.w-8,y-200,2,200)}}
 
 /* ---------- thesis defence ---------- */
 const TH={active:false,t:0};
@@ -813,10 +962,10 @@ function showRush(win){paused=true;const T=RT[RUSH.tier];$('rushT').textContent=
 function leaveRush(){RUSH.active=false;RUSH.done=false;const f=RUSH.from||{map:0,x:300};S=stats();P.hp=S.mhp;P.sp=S.msp;travel(f.map,MAPS[f.map].spawn,'Back from the Starbell Trials.')}
 
 /* ---------- pre-Region 4 polish (14.1–14.4) ---------- */
-const VER='0.18 player experience (22 Nov 2026)';let lastHurt=0,achT=2,DQ=null;
+const VER='0.19 Clocktide Harbor Act 1 (23 Nov 2026)';let lastHurt=0,achT=2,DQ=null;
 const xpFall=m=>{if(m.boss)return 1;const g=P.lv-m.lvl;return g>=8?Math.max(.1,1-.15*(g-7)):1};
 function lvChip(L){const g=P.lv-L,c=g>=8?'#8a849a':L-P.lv>=5?'#c43c4a':'#3f9b5a',t=g>=8?'too low for you':L-P.lv>=5?'dangerous':'good for you';return '<span class="chip" style="background:'+c+'">Lv '+L+' · '+t+'</span>'}
-const ENR={boss:180,chimera:240,shadow:360};
+const ENR={boss:180,chimera:240,shadow:360,colossus:360};
 const AFX={shield:{n:'Shielded',c:'#7fb8ff'},hasty:{n:'Hasty',c:'#ffe066'},vamp:{n:'Vampiric',c:'#ff7a7a'},split:{n:'Splitting',c:'#c98aff'},thorny:{n:'Thorny',c:'#7dff9a'},frenzy:{n:'Frenzied',c:'#ffa040'}};
 const logMs=k=>{const c=(P&&P.mlog&&P.mlog[k])||0;return (c>=100)+(c>=500)+(c>=1000)};
 const ACH=[
@@ -827,6 +976,7 @@ const ACH=[
  {id:'moon',n:'Moonstruck',d:'Beat the Moonlit Chimera',c:()=>((P.mlog||{}).chimera||0)>0||!!P.mkey},
  {id:'below',n:'Below the Bell',d:'Enter the Forbidden Archive',c:()=>!!(P.vm&&P.vm[MI('archive')])},
  {id:'defended',n:'Defended',d:'Pass the Thesis Defence',c:()=>!!P.thesis},
+ {id:'steam',n:'Full Steam',d:'Beat the Brass Colossus',c:()=>((P.mlog||{}).colossus||0)>0},
  {id:'shiny',n:'Shiny Hunter',d:'Defeat 10 shiny monsters',c:()=>(P.kS||0)>=10},
  {id:'elite',n:'Elite Slayer',d:'Defeat 100 elite monsters',c:()=>(P.kE||0)>=100},
  {id:'upgraded',n:'Fully Upgraded',d:'Own any +10 item',c:()=>[P.weapon,P.charm,...P.inv].some(it=>it&&(it.up||0)>=10)},
@@ -858,19 +1008,19 @@ $('dlg').onclick=nextLine;$('dlgS').onclick=e=>{e.stopPropagation();if(!DQ)retur
 /* ---------- maps, npcs, pets ---------- */
 function spawnAll(){ZONES.forEach((z,zi)=>{if(z.safe)return;for(let n=0;n<z.cap;n++)spawnMob(z.mobs[n%z.mobs.length],zi,rnd(z.x0+80,z.x1-80))})}
 function travel(i,x,note){marks.length=0;pz.length=0;if(i!==AR())RUSH.active=false;loadMap(i);P.map=i;P.x=x;P.y=FLOOR;P.vx=P.vy=0;mobs.length=proj.length=eproj.length=loot.length=timers.length=0;if(bossCd>1e8)bossCd=0;spawnAll();
- cam=clamp(P.x-W*.42,0,WORLD-W);curZone=-1;nearObj=null;fadeT=.6;sfx('warp');pet.x=P.x-40;pet.y=P.y-70;P.vm=P.vm||{};if(!P.vm[i]){P.vm[i]=1;qCheck();if(MAPS[i].id==='archive')later(.7,()=>scene('stair',[{art:'stair_open',t:"Under the old bell, a stair you've never noticed. The Moonstone Key fits perfectly."},{t:'The air below smells of candle wax and very old ink.'}]))}msg(note||('You step through the Lantern Gate… '+MAPS[i].name+'!'),'#ffd23f');updBadge();save()}
+ cam=clamp(P.x-W*.42,0,WORLD-W);curZone=-1;nearObj=null;fadeT=.6;sfx('warp');pet.x=P.x-40;pet.y=P.y-70;P.vm=P.vm||{};if(!P.vm[i]){P.vm[i]=1;qCheck();if(MAPS[i].id==='harbor1')later(.7,()=>scene('harbor',[{t:'The Starling bursts out of the clouds. Below: airships, brass towers and docks floating on a sea of cloud.'},{who:WREN,art:WA,t:'Brassbell Wharf! Ottilie\'s workshop is just along the boardwalk. Say hello before she sells your boots.'}]));if(MAPS[i].id==='archive')later(.7,()=>scene('stair',[{art:'stair_open',t:"Under the old bell, a stair you've never noticed. The Moonstone Key fits perfectly."},{t:'The air below smells of candle wax and very old ink.'}]))}msg(note||('You step through the Lantern Gate… '+MAPS[i].name+'!'),'#ffd23f');updBadge();save()}
 const seen=(mi,zi)=>{const z=MAPS[mi].zones[zi];if(P.vz&&P.vz[mi+':'+zi])return true;if(mi===0)return zi===0||P.lv>=z.dlv;return zi===0&&!!((P.vm||{})[mi]||(mi===1&&P.vis1))};
 function openMap(){paused=true;renderMap();$('mMap').classList.add('on')}
 function renderMap(){$('mapList').innerHTML=MAPS.map((M,mi)=>M.hidden?'':'<h3 style="margin:12px 0 2px">'+M.name+'</h3>'+M.zones.map((z,zi)=>{const ok=seen(mi,zi),here=mi===MAP&&zi===zoneAt(P.x);
   return '<div class="row'+(ok?'':' lock')+'"><div><b>'+z.name+'</b><br><span class="muted">'+(z.safe?'Town · heal and shops':lvChip(z.boss?MT[z.boss].lvl:z.dlv)+' '+(z.boss?'Boss area':'Monsters'))+'</span></div><button class="btn alt" data-go="'+mi+':'+zi+'"'+(ok&&!here?'':' disabled')+'>'+(here?'You are here':ok?'Travel':'Not visited')+'</button></div>'}).join('')).join('');
- P.rush=P.rush||{};$('mapList').insertAdjacentHTML('beforeend','<h3 style="margin:14px 0 2px;display:flex;gap:8px;align-items:center">'+(RA('ico_rush')?'<img class="ico" src="'+ARTDATA.ico_rush+'" alt="">':'')+'Boss Rush · Starbell Trials</h3><p class="muted" style="margin:0 0 4px">6 waves of guardians and bosses, back to back. No EXP lost if you faint.</p>'+RT.map((t,i)=>'<div class="row'+(P.lv>=t.lv?'':' lock')+'"><div style="display:flex;gap:10px;align-items:center">'+(RA('badge_n')?'<img class="ico" src="'+ARTDATA[['badge_n','badge_h','badge_nm'][i]]+'" alt="">':'')+'<div><b>'+t.n+'</b><br><span class="muted">Recommended Lv '+t.lv+'+ · '+(P.rush[i]?'best '+fmtT(P.rush[i]):'not cleared yet')+'</span></div></div><button class="btn alt" data-rush="'+i+'"'+(P.lv>=t.lv&&!RUSH.active?'':' disabled')+'>'+(RUSH.active&&RUSH.tier===i?'In progress':P.lv>=t.lv?'Enter':'Lv '+t.lv)+'</button></div>').join(''));
+ P.rush=P.rush||{};$('mapList').insertAdjacentHTML('beforeend','<h3 style="margin:14px 0 2px;display:flex;gap:8px;align-items:center">'+(RA('ico_rush')?'<img class="ico" src="'+ARTDATA.ico_rush+'" alt="">':'')+'Boss Rush · Starbell Trials</h3><p class="muted" style="margin:0 0 4px">'+RW.length+' waves of guardians and bosses, back to back. No EXP lost if you faint.</p>'+RT.map((t,i)=>'<div class="row'+(P.lv>=t.lv?'':' lock')+'"><div style="display:flex;gap:10px;align-items:center">'+(RA('badge_n')?'<img class="ico" src="'+ARTDATA[['badge_n','badge_h','badge_nm'][i]]+'" alt="">':'')+'<div><b>'+t.n+'</b><br><span class="muted">Recommended Lv '+t.lv+'+ · '+(P.rush[i]?'best '+fmtT(P.rush[i]):'not cleared yet')+'</span></div></div><button class="btn alt" data-rush="'+i+'"'+(P.lv>=t.lv&&!RUSH.active?'':' disabled')+'>'+(RUSH.active&&RUSH.tier===i?'In progress':P.lv>=t.lv?'Enter':'Lv '+t.lv)+'</button></div>').join(''));
  $('mapList').querySelectorAll('[data-rush]').forEach(b=>b.onclick=()=>{closeAll();startRush(+b.dataset.rush)});
  $('mapList').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{const [mi,zi]=b.dataset.go.split(':').map(Number);closeAll();goTo(mi,zi)})}
 function goTo(mi,zi){if(P.deadT>0)return;const z=MAPS[mi].zones[zi],x=z.safe?MAPS[mi].spawn:z.x0+90,note='Fast travel: '+z.name;
  if(mi!==MAP){travel(mi,x,note);return}P.x=x;P.y=FLOOR;P.vx=P.vy=0;cam=clamp(P.x-W*.42,0,WORLD-W);fadeT=.6;pet.x=P.x-40;pet.y=P.y-70;msg(note,'#ffd23f');save()}
 function talk(){const o=nearObj;if(!o)return;HEV.talk=1;
  if(o.k==='warp'){if(o.lv&&P.lv<o.lv){msg('This gate is sealed until Lv '+o.lv+'.','#ffb0b0');return}if(o.key&&!P.mkey){msg('The Sealed Stair is locked. A moon-shaped keyhole glows faintly…','#ffb0b0');return}travel(o.to,o.tx)}
- else if(o.k==='merchant')openShop(MAP);else if(o.k==='pets')openPets(true);else if(o.k==='shop')openShop();else if(o.k==='exit')leaveRush();else if(o.k==='texit')leaveThesis();else if(o.k==='quillon'){P.talked=P.talked||{};P.talked.quillon=1;qCheck();const Q='Archivist Quillon',A='npc_quillon';if(!(P.sc&&P.sc.quillon))scene('quillon',[{who:Q,art:A,t:'Quiet, please. And wipe your boots. The ink is load-bearing.'},{who:Q,art:A,t:'Three hundred years I have shelved these books, and not one student has returned a single one on time.'},{who:Q,art:A,t:'I sell gear, if you must. Whisper your order.'}],()=>openShop(MAP));else say([{who:Q,art:A,t:['Welcome back, '+pfirst()+'. Whisper your order.','Shoes. Wiped. Thank you.','Mind the ink.'][Math.floor(Math.random()*3)]}],()=>openShop(MAP))}else if(o.k==='lumen')openLumen()}
+ else if(o.k==='merchant')openShop(MAP);else if(o.k==='pets')openPets(true);else if(o.k==='shop')openShop();else if(o.k==='exit')leaveRush();else if(o.k==='texit')leaveThesis();else if(o.k==='quillon'){P.talked=P.talked||{};P.talked.quillon=1;qCheck();const Q='Archivist Quillon',A='npc_quillon';if(!(P.sc&&P.sc.quillon))scene('quillon',[{who:Q,art:A,t:'Quiet, please. And wipe your boots. The ink is load-bearing.'},{who:Q,art:A,t:'Three hundred years I have shelved these books, and not one student has returned a single one on time.'},{who:Q,art:A,t:'I sell gear, if you must. Whisper your order.'}],()=>openShop(MAP));else say([{who:Q,art:A,t:['Welcome back, '+pfirst()+'. Whisper your order.','Shoes. Wiped. Thank you.','Mind the ink.'][Math.floor(Math.random()*3)]}],()=>openShop(MAP))}else if(o.k==='lumen')openLumen();else if(o.k==='dock'||o.k==='ship')openWren();else if(o.k==='ottilie')openOttilie();else if(o.k==='lamp')useLamp()}
 const ISRC={};function isrc(k){if(ISRC[k])return ISRC[k];{const m0=MAN[k];if(ARTDATA[k]&&!(m0&&(m0.n||1)>1))return ARTDATA[k];if(!IMG[k])return ARTDATA[k]||''}const im=IMG[k],m=MAN[k];if(!im)return '';const c=document.createElement('canvas');c.width=m&&m.fw?m.fw:im.width;c.height=m&&m.fh?m.fh:im.height;c.getContext('2d').drawImage(im,0,0);return ISRC[k]=c.toDataURL()}
 function openPets(atPip){petsAtPip=!!atPip;paused=true;renderPets();$('mPets').classList.add('on')}
 function renderPets(){P.pets=P.pets||[];$('petInfo').textContent=P.gold+' gold · '+(petsAtPip?'"Every student needs a friend!" Pip hatches eggs here.':'Switch pets anywhere. New pets come from Pip in Lanternfall Village.');
@@ -887,7 +1037,7 @@ function updPet(dt){if(!P.pet||!PETS[P.pet])return;let tx=P.x-P.dir*46,ty=P.y-72
  if(dd>mx){pet.x+=dx/dd*mx;pet.y+=dy/dd*mx}else{pet.x=tx;pet.y=ty}if(Math.abs(dx)>3)pet.dir=Math.sign(dx);
  if(best&&Math.hypot(best.x-pet.x,best.y-pet.y)<24)collect(loot.indexOf(best))}
 function collect(i){const l=loot[i];if(!l)return false;
- if(l.k==='gold'){P.gold+=l.val;sfx('coin')}else if(l.k==='pot'){P.pots++;msg('Picked up a potion','#7dff9a')}else if(l.k==='eth'){P.eths=(P.eths||0)+1;msg('Picked up an ether','#9fd0ff')}else if(l.k==='page'){P.pages=(P.pages||0)+1;const nw=(P.pagesT||0)<10;P.pagesT=Math.min(10,(P.pagesT||0)+1);msg('Lost Page '+Math.min(P.pages,10)+'/10'+(nw?' · new diary page in your Bag':''),'#e8d9b4');qCheck()}else if(l.k==='shard'){P.shards=(P.shards||0)+l.val;msg('Picked up '+(l.val>1?l.val+' Star Shards':'a Star Shard'),'#9fe8ff')}
+ if(l.k==='gold'){P.gold+=l.val;sfx('coin')}else if(l.k==='pot'){P.pots++;msg('Picked up a potion','#7dff9a')}else if(l.k==='eth'){P.eths=(P.eths||0)+1;msg('Picked up an ether','#9fd0ff')}else if(l.k==='page'){P.pages=(P.pages||0)+1;const nw=(P.pagesT||0)<10;P.pagesT=Math.min(10,(P.pagesT||0)+1);msg('Lost Page '+Math.min(P.pages,10)+'/10'+(nw?' · new diary page in your Bag':''),'#e8d9b4');qCheck()}else if(l.k==='cog'){P.cogs=(P.cogs||0)+1;msg('Brass Cog '+Math.min(P.cogs,12)+'/12','#d9a441');qCheck()}else if(l.k==='shard'){P.shards=(P.shards||0)+l.val;msg('Picked up '+(l.val>1?l.val+' Star Shards':'a Star Shard'),'#9fe8ff')}
  else{if(SET.loot&&l.item.t<SET.loot){const v=sellV(l.item);P.gold+=v;msg('Auto-sold '+l.item.name+' (+'+v+'g)','#c9c2dc');loot.splice(i,1);return true}if(P.inv.length>=BAG){if(!l.warn){l.warn=1;msg('Satchel full! Sell something.','#ffb0b0')}return false}P.inv.push(l.item);msg('Got '+l.item.name+' ('+itemTxt(l.item)+')','#ffd23f');gotItem(l.item)}
  loot.splice(i,1);return true}
 function drawPet(){if(!P.pet||!PETS[P.pet])return;const p=PETS[P.pet],sx=Math.round(pet.x-cam),sy=Math.round(pet.y);
@@ -916,15 +1066,23 @@ const PH=[
  ['sentinel_walk','golem_walk',140,[.72,.9,.85]],['sentinel_wind','golem_wind',140,[.72,.9,.85]],['sentinel_slam','golem_slam',140,[.72,.9,.85]],
  ['chimera_idle','boss_idle',200,[.9,.9,1.25]],['chimera_walk','boss_walk',200,[.9,.9,1.25]],['chimera_wind','boss_wind',200,[.9,.9,1.25]],['chimera_leap','boss_leap',200,[.9,.9,1.25]],['chimera_slam','boss_slam',200,[.9,.9,1.25]],['chimera_hurt','boss_hurt',200,[.9,.9,1.25]],
 ['pet_chick','slime_g',-75,[1.35,1.2,.55]],['pet_mochi','slime_p',70,[1.25,1,1.05]],['pet_moth','bat',200,[1.6,1.3,.7]],['pet_wisp','orb',-150,[1.25,1.15,.8]],
- ['npc_merchant','shop',25,[1,.95,.9]],['npc_pets','shop',110,[1,1,1]],['well','fountain',-40,[1,.9,.8]]];
+ ['npc_merchant','shop',25,[1,.95,.9]],['npc_pets','shop',110,[1,1,1]],['well','fountain',-40,[1,.9,.8]],
+ /* Clocktide Harbor Act 1 placeholders (5th value: saturation kept, 0-1) */
+ ['crab_walk','golem_walk',0,[1.25,.85,.5],.5],['crab_wind','golem_wind',0,[1.25,.85,.5],.5],['crab_slam','golem_slam',0,[1.25,.85,.5],.5],
+ ['gull','bat',0,[2.3,2.3,2.4],.12],
+ ['automaton_walk','sentinel_walk',0,[1.3,.78,.5],.4],['automaton_wind','sentinel_wind',0,[1.3,.78,.5],.4],['automaton_slam','sentinel_slam',0,[1.3,.78,.5],.4],
+ ['jelly','wisp',0,[.95,1.15,1.25]],
+ ['colossus_idle','boss_idle',0,[1.5,1.08,.55],.3],['colossus_walk','boss_walk',0,[1.5,1.08,.55],.3],['colossus_wind','boss_wind',0,[1.5,1.08,.55],.3],['colossus_leap','boss_leap',0,[1.5,1.08,.55],.3],['colossus_slam','boss_slam',0,[1.5,1.08,.55],.3],['colossus_hurt','boss_hurt',0,[1.5,1.08,.55],.3],
+ ['npc_wren','shop',-25,[1.1,.85,.95]],['npc_ottilie','npc_merchant',40,[1.05,1,.85]],['pet_sparrow','pet_moth',0,[1.4,1.1,.6],.3]];
 function drawIcons(){const mk=(k,f)=>{if(IMG[k])return;const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');f(g);IMG[k]=c;MAN[k]={n:1,fw:64,fh:64,ax:32,ay:64}};
  mk('ico_shard',g=>{g.fillStyle='#3a8ad0';g.beginPath();g.moveTo(32,4);g.lineTo(52,30);g.lineTo(32,60);g.lineTo(12,30);g.fill();g.fillStyle='#9fe8ff';g.beginPath();g.moveTo(32,8);g.lineTo(46,30);g.lineTo(32,52);g.fill();g.fillStyle='#fff';g.fillRect(26,18,5,12)});
  mk('ico_gear',g=>{g.translate(32,32);g.fillStyle='#8a8aa8';for(let k=0;k<8;k++){g.rotate(Math.PI/4);g.fillRect(-6,-28,12,12)}g.beginPath();g.arc(0,0,20,0,7);g.fill();g.fillStyle='#d9d2e8';g.beginPath();g.arc(0,0,14,0,7);g.fill();g.fillStyle='#4a4468';g.beginPath();g.arc(0,0,7,0,7);g.fill()});
+ mk('ico_cog0',g=>{g.translate(32,32);g.fillStyle='#8a5a1a';for(let k=0;k<10;k++){g.rotate(Math.PI/5);g.fillRect(-6,-30,12,12)}g.beginPath();g.arc(0,0,23,0,7);g.fill();g.fillStyle='#d9a441';g.beginPath();g.arc(0,0,19,0,7);g.fill();g.fillStyle='#8a5a1a';g.beginPath();g.arc(0,0,8,0,7);g.fill();g.fillStyle='#fff6c8';g.fillRect(-12,-14,6,6)});
  mk('ico_map',g=>{g.fillStyle='#e8d9b4';g.fillRect(8,12,48,40);g.strokeStyle='#6b4a2a';g.lineWidth=4;g.strokeRect(8,12,48,40);g.strokeStyle='#c43c6a';g.setLineDash([5,4]);g.beginPath();g.moveTo(14,44);g.lineTo(28,30);g.lineTo(38,38);g.lineTo(48,20);g.stroke();g.setLineDash([]);g.fillStyle='#c43c6a';g.fillRect(44,16,8,8)})}
-function tintArt(){drawIcons();for(const [k,src,deg,mul] of PH){if(IMG[k]||!IMG[src]||(ARTDATA[k]&&!ARTFAIL[k]))continue;const im=IMG[src],c=document.createElement('canvas');c.width=im.width;c.height=im.height;const g=c.getContext('2d');g.drawImage(im,0,0);
+function tintArt(){drawIcons();for(const [k,src,deg,mul,sat] of PH){if(IMG[k]||!IMG[src]||(ARTDATA[k]&&!ARTFAIL[k]))continue;const im=IMG[src],c=document.createElement('canvas');c.width=im.width;c.height=im.height;const g=c.getContext('2d');g.drawImage(im,0,0);
  try{const d=g.getImageData(0,0,c.width,c.height),p=d.data,a=deg*Math.PI/180,co=Math.cos(a),si=Math.sin(a);
   const M=[.213+.787*co-.213*si,.715-.715*co-.715*si,.072-.072*co+.928*si,.213-.213*co+.143*si,.715+.285*co+.14*si,.072-.072*co-.283*si,.213-.213*co-.787*si,.715-.715*co+.715*si,.072+.928*co+.072*si];
-  for(let i=0;i<p.length;i+=4){if(!p[i+3])continue;const r=p[i],gg=p[i+1],b=p[i+2];p[i]=(M[0]*r+M[1]*gg+M[2]*b)*mul[0];p[i+1]=(M[3]*r+M[4]*gg+M[5]*b)*mul[1];p[i+2]=(M[6]*r+M[7]*gg+M[8]*b)*mul[2]}g.putImageData(d,0,0)}catch(e){}
+  for(let i=0;i<p.length;i+=4){if(!p[i+3])continue;const r=p[i],gg=p[i+1],b=p[i+2];let R2=M[0]*r+M[1]*gg+M[2]*b,G2=M[3]*r+M[4]*gg+M[5]*b,B2=M[6]*r+M[7]*gg+M[8]*b;if(sat!=null){const l=.3*R2+.59*G2+.11*B2;R2=l+(R2-l)*sat;G2=l+(G2-l)*sat;B2=l+(B2-l)*sat}p[i]=R2*mul[0];p[i+1]=G2*mul[1];p[i+2]=B2*mul[2]}g.putImageData(d,0,0)}catch(e){}
  IMG[k]=c;if(MAN[src]&&!MAN[k])MAN[k]={...MAN[src]}}}
 
 /* ---------- start ---------- */
@@ -986,14 +1144,14 @@ if(MAPS[MAP].obj.some(o=>o.k==='heal'&&Math.abs(P.x-o.x)<110)){P.hp=Math.min(S.m
   if(P.deadT<=0&&over({l:e.x-e.w/2,r:e.x+e.w/2,t:e.y-e.h/2,b:e.y+e.h/2},rect(P))){hurtP(e.dmg,e.x);e.life=0}if(e.life<=0)eproj.splice(i,1)}
  // loot
  for(let i=loot.length-1;i>=0;i--){const l=loot[i];l.t+=dt;if(!l.onG){l.vy+=GRAV*dt;moveBody(l,dt);if(l.onG)l.vx=0}
-  const d=Math.hypot(P.x-l.x,P.y-20-l.y);if(l.t>.4&&d<130&&P.deadT<=0){l.x+=(P.x-l.x)*dt*8;l.y+=(P.y-20-l.y)*dt*8;l.onG=1}
+  const d=Math.hypot(P.x-l.x,P.y-20-l.y);if(l.t>.4&&d<130*(1+petB('range'))&&P.deadT<=0){l.x+=(P.x-l.x)*dt*8;l.y+=(P.y-20-l.y)*dt*8;l.onG=1}
    if(l.t>.4&&d<26&&P.deadT<=0&&collect(i))continue;
   if(l.t>40)loot.splice(i,1)}
  for(let i=fx.length-1;i>=0;i--){const f=fx[i];f.life-=dt;if(f.follow){f.x=P.x;f.y=P.y}if(f.k==='p'){f.x+=f.vx*dt;f.y+=f.vy*dt;f.vy+=500*dt}if(f.life<=0)fx.splice(i,1)}
  for(let i=nums.length-1;i>=0;i--){const n=nums[i];n.life-=dt;n.y-=40*dt;if(n.life<=0)nums.splice(i,1)}
  for(let i=log.length-1;i>=0;i--){log[i].life-=dt;if(log[i].life<=0)log.splice(i,1)}
-  spawner(dt);updRush(dt);updTrial(dt);updMarks(dt);updPZ(dt);updPet(dt);fadeT=Math.max(0,fadeT-dt);comboT-=dt;if(comboT<=0)combo=0;
-  nearObj=null;if(P.deadT<=0&&P.onG)for(const o of MAPS[MAP].obj){if(o.k!=='heal'&&o.k!=='deco'&&Math.abs(P.x-o.x)<60){nearObj=o;break}}
+  spawner(dt);updRush(dt);updTrial(dt);updHarbor(dt);updMarks(dt);updPZ(dt);updPet(dt);fadeT=Math.max(0,fadeT-dt);comboT-=dt;if(comboT<=0)combo=0;
+  nearObj=null;if(P.deadT<=0&&P.onG)for(const o of MAPS[MAP].obj){if(o.k!=='heal'&&o.k!=='deco'&&Math.abs(P.x-o.x)<60&&(o.y?Math.abs(P.y-o.y)<14:P.y>FLOOR-40)&&(!o.cond||o.cond())){nearObj=o;break}}
   if(TOUCH){const tt=$('tTalk'),want=nearObj?'grid':'none';if(tt.style.display!==want)tt.style.display=want}
 cam+=((clamp(P.x-W*.42,0,WORLD-W))-cam)*Math.min(1,dt*8);shake=Math.max(0,shake-dt);
  const zi=zoneAt(P.x);if(zi!==curZone){curZone=zi;banner=3;if(zi>=0){P.vz=P.vz||{};P.vz[MAP+':'+zi]=1}}banner-=dt;
@@ -1012,6 +1170,7 @@ const z=ZONES[zi],sx0=z.x0-cam,sx1=z.x1-cam;if(sx1<0||sx0>W)return;const BGL=z.b
    for(let i=i0;i<i0+Math.ceil(W/bw)+3;i++){const bx=Math.round(i*bw-off);if(i&1){ctx.save();ctx.translate(bx+bw,0);ctx.scale(-1,1);ctx.drawImage(im,0,y,bw,h);ctx.restore()}else ctx.drawImage(im,bx,y,bw,h)}}
   ctx.restore();return}
  const par=(f,sp,fn)=>{const off=cam*f;const i0=Math.floor((off+sx0*f-200)/sp);for(let i=i0;i<i0+Math.ceil(W/sp)+4;i++)fn(i*sp-off,i)};
+ if(typeof z.fb==='string'){drawHarborBg(z,par);ctx.restore();return}
   if(z.fb===0){ctx.fillStyle='#ffffffaa';par(.1,260,(x,i)=>{ctx.beginPath();ctx.ellipse(x,70+hash(i)*60,60,18,0,0,7);ctx.fill()});
   ctx.fillStyle='#9a86c8';par(.3,420,(x,i)=>{const h=150+hash(i)*90;ctx.fillRect(x,FLOOR-h-40,90,h+40);ctx.beginPath();ctx.moveTo(x-12,FLOOR-h-40);ctx.lineTo(x+45,FLOOR-h-120);ctx.lineTo(x+102,FLOOR-h-40);ctx.fill();ctx.fillStyle='#ffe9a8';for(let w=0;w<3;w++)ctx.fillRect(x+18+w*22,FLOOR-h+10,10,16);ctx.fillStyle='#9a86c8'});
   // academy gate + fountain in world space
@@ -1032,15 +1191,17 @@ const z=ZONES[zi],sx0=z.x0-cam,sx1=z.x1-cam;if(sx1<0||sx0>W)return;const BGL=z.b
  ctx.restore();
 }
 function drawPlat(){if(!artReady)return drawPlatOld();
- for(let zi=0;zi<ZONES.length;zi++){const z=ZONES[zi],a=Math.max(z.x0,cam-48),b=Math.min(z.x1,cam+W+48);if(b<=a)continue;const [tk,fk]=z.tk,top=IMG[tk],fill=IMG[fk];if(!top||!fill)continue;
+ for(let zi=0;zi<ZONES.length;zi++){const z=ZONES[zi],a=Math.max(z.x0,cam-48),b=Math.min(z.x1,cam+W+48);if(b<=a)continue;const [tk,fk]=z.tk,top=IMG[tk],fill=IMG[fk];if(!top||!fill){if(typeof z.fb==='string')codeGround(z,a,b);continue}
   ctx.save();ctx.beginPath();ctx.rect(z.x0-cam,FLOOR-30,z.x1-z.x0,H);ctx.clip();
   const th=Math.round(48*top.height/top.width),fh=Math.round(48*fill.height/fill.width);for(let x=Math.floor(a/48)*48;x<b;x+=48){for(let y=FLOOR-4+th;y<H;y+=fh)ctx.drawImage(fill,x-cam,y,48,fh);ctx.drawImage(top,x-cam,FLOOR-4,48,th)}
   ctx.restore()}
- for(const p of PLAT){if(p.h>20||p.x+p.w<cam-40||p.x>cam+W+40)continue;const z=ZONES[Math.max(0,zoneAt(p.x))],k=z.tk[2],m=MAN[k],im=IMG[k];if(!im||!m)continue;const w=p.w+24,h=Math.min(m.fh*w/m.fw,z.ph||86);
+ for(const p of PLAT){if(p.h>20||p.x+p.w<cam-40||p.x>cam+W+40)continue;const z=ZONES[Math.max(0,zoneAt(p.x))],k=z.tk[2],m=MAN[k],im=IMG[k];if(!im||!m){if(typeof z.fb==='string')codePlat(p,z);continue}const w=p.w+24,h=Math.min(m.fh*w/m.fw,z.ph||86);
   ctx.drawImage(im,0,0,m.fw,m.fh,p.x-12-cam,p.y-8,w,h)}}
 function drawObjects(){if(!artReady)return;ctx.textAlign='center';ctx.font='600 16px "Starbell","StarbellNum",monospace';
  const lab=(t,x,y,hi)=>{if(x<-60||x>W+60)return;ctx.fillStyle=hi?'#f2c14e':'#1b1633cc';const w=ctx.measureText(t).width+14;x=clamp(x,w/2+4,W-w/2-4);ctx.fillRect(x-w/2,y-16,w,22);ctx.fillStyle=hi?'#1b1633':'#f6ecd2';ctx.fillText(t,x,y)};
- for(const o of MAPS[MAP].obj){const sx=o.x-cam;if(sx<-160||sx>W+160)continue;const gate=o.k==='warp'||o.k==='exit';
+ for(const o of MAPS[MAP].obj){const sx=o.x-cam;if(sx<-200||sx>W+200||(o.cond&&!o.cond()))continue;const gate=o.k==='warp'||o.k==='exit';
+  if(o.k==='dock'||o.k==='ship')drawAirship(sx+(o.k==='dock'?95:-20),FLOOR-6);if(o.k==='lamp'){drawLamp(sx,o.y);const ly=o.y+40;lab(o.label,sx,ly);if(nearObj===o)lab(TOUCH?'Tap Talk':'Press F to use',sx,ly+26,1);continue}
+  if(o.kettle&&!o.art)drawKettle(sx);if(o.steam){ctx.save();for(let q=0;q<4;q++){const t=(T*.8+q/4)%1;ctx.globalAlpha=.5*(1-t);ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(sx+28+Math.sin(T*2+q)*8+t*20,FLOOR-120-t*70,10+t*14,0,7);ctx.fill()}ctx.restore()}
   if(o.k==='frame'){if(RA('vframe')){fr('vframe',0,sx,FLOOR-195,.8);continue}ctx.save();ctx.fillStyle='#1a1030';ctx.fillRect(sx-44,FLOOR-250,88,110);ctx.strokeStyle='#c9a060';ctx.lineWidth=6;ctx.strokeRect(sx-44,FLOOR-250,88,110);ctx.fillStyle='#8a4ad633';ctx.fillRect(sx-38,FLOOR-244,76,98);ctx.restore();continue}
   if(o.stair&&RA('stair_open'))fr(o.key&&!(P.lv>=(o.lv||0)&&P.mkey)?'stair_locked':'stair_open',0,sx,FLOOR+4,.66);else if(gate||o.k==='texit')drawWarp(sx);else if(o.art){if(o.k==='pets'){const nr=Math.abs(P.x-o.x)<170;if(nr&&!PIPN)PIPW=T;PIPN=nr}if(o.ghost){ctx.save();ctx.globalAlpha=.72+.1*Math.sin(T*2)}fr(o.art,o.nf?o.f0+Math.floor(T*o.fps)%o.nf:Math.floor(T*(o.fps||0)),sx,FLOOR+(o.dy||2)-(o.ghost?12+6*Math.sin(T*1.6):0),o.s);if(o.ghost)ctx.restore()}
   const ly=FLOOR+(o.ly||(gate||o.k==='texit'?-200:-104));if(o.label)lab(o.label,sx,ly);if(nearObj===o)lab(TOUCH?'Tap Talk':(gate?'Press F to travel':'Press F to talk'),sx,ly-28,1)}}
@@ -1051,11 +1212,13 @@ function bar(x,y,w,h,v,col,bg){ctx.fillStyle=bg||'#1b1633';ctx.fillRect(x,y,w,h)
 const MSC={slime:.42,worm:.48,bat:.42,golem:.52,boss:.8};
 function mobKey(m){const sk=MT[m.type].skin||m.type;switch(m.ai){
   case 'slime':{if(m.type==='frog')return [sk,!m.onG?2:m.tm<.25?1:0];if(m.type!=='slime')return [sk,!m.onG?2:m.tm<.25?1:0];const k=m.v?'slime_p':'slime_g';return [k,!m.onG?(m.v?1:2):m.tm<.25?(m.v?2:1):0]}
+ case 'crab':return m.guardT>0||m.st==='wind'?[sk+'_wind',0]:m.slamT>0?[sk+'_slam',0]:[sk+'_walk',Math.abs(m.vx)>1?m.wd/10:0];
+ case 'gull':return [sk,m.st==='cry'?0:m.anim*(m.st==='dive'?4:9)];case 'jelly':return [sk,m.anim*(m.st==='charge'?14:4)];
  case 'worm':return ['worm',m.anim*5];case 'bat':return m.dive>0&&IMG[sk+'_dive']?[sk+'_dive',0]:[sk,m.anim*9];
   case 'mimic':return [sk+(m.st==='disguise'&&RA(sk+'_disg')?'_disg':m.st==='lunge'?'_slam':m.st==='reveal'?'_wind':'_walk'),m.st==='walk'?m.wd/11:0];
   case 'mirror':{const c=m.sk;return m.atkA>0?[c+'_attack',(1-m.atkA/.3)*3]:Math.abs(m.vx)>1?[c+'_walk',m.wd/26]:[c+'_idle',m.anim*2.2]}
   case 'golem':return m.st==='wind'?[sk+'_wind',0]:m.slamT>0?[sk+'_slam',0]:[sk+'_walk',Math.abs(m.vx)>1?m.wd/12:0];
-  default:return m.castT>0&&IMG[sk+'_cast']?[sk+'_cast',0]:m.hurtT>0?[sk+'_hurt',0]:m.st==='wind'||m.st==='prep'?[sk+'_wind',0]:m.st==='leap'&&!m.onG?[sk+'_leap',0]:m.slamT>0?[sk+'_slam',0]:Math.abs(m.vx)>1?[sk+'_walk',m.wd/12]:[sk+'_idle',m.anim*2]}}
+  default:return m.castT>0&&IMG[sk+'_cast']?[sk+'_cast',0]:m.hurtT>0?[sk+'_hurt',0]:m.st==='wind'||m.st==='prep'||m.st==='stomp'?[sk+'_wind',0]:m.st==='leap'&&!m.onG?[sk+'_leap',0]:m.slamT>0?[sk+'_slam',0]:Math.abs(m.vx)>1?[sk+'_walk',m.wd/12]:[sk+'_idle',m.anim*2]}}
 function drawTele(m){const sx=m.x-cam,a=.25+.2*Math.sin(T*18);ctx.save();
  if(m.boss&&(m.st==='prep'||(m.st==='leap'&&!m.onG))){const tx=m.tx-cam;ctx.fillStyle='rgba(255,60,60,'+a+')';ctx.beginPath();ctx.ellipse(tx,FLOOR,115,16,0,0,7);ctx.fill();ctx.strokeStyle='rgba(255,90,90,.9)';ctx.lineWidth=3;ctx.stroke();
   ctx.fillStyle='rgba(255,60,60,'+(a*.6)+')';ctx.fillRect(tx-115,FLOOR-8,230,8)}
@@ -1075,7 +1238,7 @@ function drawMob(m){
   const jx=m.st==='wind'||m.st==='prep'?Math.sin(T*60)*2:0,ek=m.elite?eliteKey(k,m.elite):k,es=(m.ai==='mirror'?.5:m.elite?sc*1.15:sc)*(m.mini?.62:1)*(m.kid?.75:1),ek2=m.ai==='mirror'?eliteKey(k,'shadow'):ek;
    if(!RA('mimic_disg')&&(m.st==='disguise'||m.st==='reveal')){ctx.save();ctx.fillStyle='#1a1030';ctx.fillRect(sx-40,sy-m.h-30,80,m.h+30);ctx.strokeStyle='#c9a060';ctx.lineWidth=6;ctx.strokeRect(sx-40,sy-m.h-30,80,m.h+30);ctx.restore()}
    const ph=MT[m.type].phase&&!(m.dive>0)&&(m.dcd||9)>.6;if(ph)ctx.globalAlpha=.35;if(m.elite==='shiny'){ctx.save();ctx.globalAlpha=.35+.2*Math.sin(T*6);ctx.fillStyle='#ffe680';ctx.beginPath();ctx.ellipse(sx,sy-m.h/2,m.w*.9,m.h*.75,0,0,7);ctx.fill();ctx.restore();if(Math.random()<.15)fx.push({k:'p',x:m.x+rnd(-20,20),y:m.y-rnd(0,m.h),vx:0,vy:-40,life:.6,max:.6,c:'#fff6b0',s:3})}XF=null;fr(ek2,i,sx+jx,sy+(m.fly?0:2),es,fl);ctx.globalAlpha=1;if(m.st==='reveal'&&!RA('mimic_disg')){ctx.fillStyle='#ff3030';ctx.fillRect(sx-14,sy-m.h*.78,8,6);ctx.fillRect(sx+6,sy-m.h*.78,8,6)}if(m.flash>0){ctx.globalAlpha=.7;fr(k,i,sx+jx,sy+(m.fly?0:2),es,fl,1);ctx.globalAlpha=1}
-  XF=null;drawMobUi(m,sx,sy);return}
+  XF=null;drawMobFx(m,sx,sy);drawMobUi(m,sx,sy);return}
  const set=MS[m.type][m.v]||MS[m.type][0];let img=set[0];if(m.type==='bat')img=set[Math.floor(m.anim*8)%2];
  const sx=m.x-cam,sy=m.y;let bob=m.type==='slime'&&m.onG?Math.sin(m.anim*6)*1.5:0;
  ctx.save();ctx.translate(Math.round(sx),Math.round(sy));
@@ -1127,15 +1290,16 @@ function render(){if(state!=='play'){const hc=$('hudCv');if(hc)hc.style.display=
  drawPlat();drawObjects();
  if(state==='play'){
   for(const l of loot){const x=l.x-cam,y=l.y-7+Math.sin(T*5+l.t)*2;
-   if(artReady){if(l.k==='gold'){if(RA('fx_coin'))frC('fx_coin',T*8+l.x*.05,x,y-6,.32);else frC('ico_coin',0,x,y,.17)}else if(l.k==='pot')frC('ico_potion',0,x,y-2,.22);else if(l.k==='eth')frC('ico_ether',0,x,y-2,.22);else if(l.k==='page'){if(RA('ico_page'))frC('ico_page',0,x,y-12,.3);else frC('ico_scroll',0,x,y-2,.2)}else if(l.k==='shard')frC('ico_shard',0,x,y-2,.38);else{ctx.fillStyle=TIERC[l.item.t]+'66';ctx.beginPath();ctx.arc(x,y,13,0,7);ctx.fill();frC(itemIcon(l.item),0,x,y,.24)}continue}
+   if(artReady){if(l.k==='gold'){if(RA('fx_coin'))frC('fx_coin',T*8+l.x*.05,x,y-6,.32);else frC('ico_coin',0,x,y,.17)}else if(l.k==='pot')frC('ico_potion',0,x,y-2,.22);else if(l.k==='eth')frC('ico_ether',0,x,y-2,.22);else if(l.k==='page'){if(RA('ico_page'))frC('ico_page',0,x,y-12,.3);else frC('ico_scroll',0,x,y-2,.2)}else if(l.k==='shard')frC('ico_shard',0,x,y-2,.38);else if(l.k==='cog')frC(RA('ico_cog')?'ico_cog':'ico_cog0',0,x,y-2,.32);else{ctx.fillStyle=TIERC[l.item.t]+'66';ctx.beginPath();ctx.arc(x,y,13,0,7);ctx.fill();frC(itemIcon(l.item),0,x,y,.24)}continue}
    if(l.k==='gold'){ctx.fillStyle='#f2c14e';ctx.beginPath();ctx.arc(x,y,6,0,7);ctx.fill();ctx.fillStyle='#fff3';ctx.fillRect(x-3,y-3,3,3)}else if(l.k==='pot'){ctx.fillStyle='#ff6b8a';ctx.fillRect(x-5,y-4,10,10);ctx.fillStyle='#f6ecd2';ctx.fillRect(x-3,y-8,6,4)}else{ctx.fillStyle=['#c9c2dc','#d98a4a','#bfe9ff','#ffd23f','#ff8a8a'][l.item.t];ctx.fillRect(x-7,y-7,14,14);ctx.strokeStyle='#2c2452';ctx.lineWidth=2;ctx.strokeRect(x-7,y-7,14,14);ctx.fillStyle='#fff8';ctx.fillRect(x-4,y-4,4,4)}}
   for(const m of mobs)drawMob(m);
    drawPZ();drawMarks();drawPet();drawPlayer();if(P.deadT<=0){ctx.textAlign='center';const tx=Math.round(P.x-cam),ty=Math.round(P.y),ht=!!(P.ttl&&ACHM[P.ttl]);if(P.name){ctx.font='600 13px "Starbell","StarbellNum",monospace';ctx.lineWidth=3;ctx.strokeStyle='#1b1633';ctx.strokeText(P.name,tx,ty-(ht?98:84));ctx.fillStyle='#fff';ctx.fillText(P.name,tx,ty-(ht?98:84))}if(ht){ctx.font='13px "Starbell","StarbellNum",monospace';const tt='«'+ACHM[P.ttl].n+'»';ctx.fillStyle='#1b1633';ctx.fillText(tt,tx+1,ty-83);ctx.fillStyle='#ffd23f';ctx.fillText(tt,tx,ty-84)}}
-for(const p of proj)drawProj(p);
+for(const p of proj)drawProj(p);if(inZ('gust'))drawGust();
   for(const e of eproj){if(artReady&&e.k==='archer'&&frC('arrow',0,e.x-cam,e.y,.5,e.vx<0?Math.PI:0))continue;if(artReady&&e.k==='mage'&&frC('orb',0,e.x-cam,e.y,.5))continue;if(artReady&&frC('shock',T*8,e.x-cam,e.y,.55,0,e.vx<0))continue;ctx.fillStyle='#7fe3ffaa';ctx.beginPath();ctx.ellipse(e.x-cam,e.y,16,13,0,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(e.x-cam-4,e.y-4,8,8)}
   for(const f of fx){const a=clamp(f.life/f.max,0,1);ctx.globalAlpha=a;
    if(f.k==='a'){ctx.globalAlpha=f.c?a:1;const n=MAN[f.key].n,i=Math.min(n-1,(1-a)*n);(f.key==='lvl'||f.key==='shock')?fr(f.key,i,f.x-cam,f.y,f.s,f.flip):frC(f.key,i,f.x-cam,f.y,f.s,0,f.flip)}
    else if(f.k==='p'){ctx.fillStyle=f.c;ctx.fillRect(f.x-cam-f.s/2,f.y-f.s/2,f.s,f.s)}
+   else if(f.k==='z'){drawBolt(f);ctx.globalAlpha=1;continue}
    else if(f.k==='r'){ctx.strokeStyle=f.c;ctx.lineWidth=4;ctx.beginPath();ctx.arc(f.x-cam,f.y,f.r*(1.15-a*.5),0,7);ctx.stroke()}
    else if(f.k==='s'){ctx.strokeStyle=f.c;ctx.lineWidth=f.big?8:5;ctx.beginPath();const st=f.d>0?-1.3:Math.PI+1.3-2.6;ctx.arc(f.x-cam,f.y,f.big?46:34,st,st+2.6*(1-a*.3));ctx.stroke()}
    ctx.globalAlpha=1}
@@ -1150,8 +1314,8 @@ function qTarget(){const q=curQ();if(!q||qReady()||MAPS[MAP].hidden||TH.active)r
  const pick=(i,t)=>{for(const z of MAPS[i].zones){if(z.boss===t||(z.mobs||[]).includes(t))return [i,z.boss===t?z.bx:(z.x0+z.x1)/2,z,z.name]}return null};
  const zoneFor=t=>{let r=pick(MAP,t);if(r)return r;for(let i=0;i<MAPS.length;i++){if(!MAPS[i].hidden&&(r=pick(i,t)))return r}return null};
  let r=null;if(q.kill&&q.kill!=='any'){r=q.kill==='slime0'?[0,1800,MAPS[0].zones[1],MAPS[0].zones[1].name]:q.kill==='slime1'?[0,3700,MAPS[0].zones[2],MAPS[0].zones[2].name]:zoneFor(q.kill)}
- else if(q.map!=null)r=[q.map,0,null,''];else if(q.talk)r=objIn(q.talk);else if(q.pet)r=objIn('pets');else if(q.collect)r=zoneFor('blotling');else if(q.thesis&&P.lv>=40)r=objIn('lumen');
- if(!r)return null;if(r[0]!==MAP){const ws=MAPS[MAP].obj.filter(o=>o.k==='warp'),w=ws.find(o=>o.to===r[0])||ws.find(o=>o.to===0);return w?{x:w.x,lab:w.label.split(' ·')[0]}:null}
+ else if(q.map!=null)r=[q.map,0,null,''];else if(q.talk)r=objIn(q.talk);else if(q.pet)r=objIn('pets');else if(q.collect)r=zoneFor(q.collect==='cog'?'crab':'blotling');else if(q.lamp)r=objIn('lamp');else if(q.thesis&&P.lv>=40)r=objIn('lumen');
+ if(!r)return null;if(r[0]!==MAP){const ws=MAPS[MAP].obj.filter(o=>o.to!=null&&(!o.cond||o.cond())),w=ws.find(o=>o.to===r[0])||ws.find(o=>o.to===0);return w?{x:w.x,lab:w.label.split(' ·')[0]}:null}
  const z=r[2];if(z&&!z.boss&&P.x>=z.x0&&P.x<=z.x1)return null;return {x:r[1],lab:r[3]}}
 function drawQArrow(){if(!SET.qarrow||P.deadT>0)return;const t=qTarget();if(!t)return;const dx=t.x-P.x;if(Math.abs(dx)<120)return;const sx=t.x-cam,b=Math.sin(T*5)*4;ctx.save();ctx.font='600 14px "Starbell","StarbellNum",monospace';ctx.textAlign='center';
  if(sx>30&&sx<W-30){const y=FLOOR-215+b;ctx.fillStyle='#f2c14e';ctx.strokeStyle='#1b1633';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(sx-13,y-14);ctx.lineTo(sx+13,y-14);ctx.lineTo(sx,y+4);ctx.closePath();ctx.stroke();ctx.fill()}

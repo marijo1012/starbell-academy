@@ -196,7 +196,7 @@ img.ico,img.tico,#bagList img,#toast img{object-fit:contain;image-rendering:pixe
 <div id="ldr" aria-live="polite"><div class="lbox"><p id="ldrT">Loading…</p><div class="lbar"><div id="ldrB"></div></div></div></div>
 <script>
 /* Boot: read the art manifest, then start the game script. Art itself loads per region (see js/game.js). */
-(function(){const BUILD='00420a0399',info=document.getElementById('saveInfo');
+(function(){const BUILD='2e57967e38',info=document.getElementById('saveInfo');
  fetch('manifest.json?b='+BUILD,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(m=>{
   const U={};for(const k in m)U[k]='art/'+(m[k].group||'core')+'/'+k+'.webp?v='+m[k].v;
   window.SB_MAN=m;window.SB_URL=U;const fail=()=>{info.textContent='Could not load the game. Check your connection and refresh.'},
