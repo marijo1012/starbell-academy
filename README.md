@@ -15,7 +15,8 @@ Live on GitHub Pages. Regions 1–3 (Lv 1–40) are playable; Region 4 (Clocktid
 ```
 index.html          game page + boot loader (reads manifest.json, then starts js/game.js)
 js/game.js          the game
-tools/              add_art.py (add or replace one art key), stamp.py (cache-busting build id)
+js/pixelfx.js       bundled pixelfx effects (weapon upgrade glow); sources in pixelfx/, rebuild with tools/bundle_pixelfx.py
+tools/              add_art.py (add or replace one art key), stamp.py (cache-busting build id), bundle_pixelfx.py
 art/
   core/             UI, player classes, effects, pets (loaded at start)
   academy/          Region 1 art
@@ -33,3 +34,7 @@ manifest.json       art manifest: frames, sizes, anchors, group (core or region)
 - [docs/ART_ASSET_LIST.md](docs/ART_ASSET_LIST.md): art checklist, sizes and prompts
 - [docs/RELEASE_NOTES.md](docs/RELEASE_NOTES.md): what shipped
 - [CLAUDE.md](CLAUDE.md): how Claude works in this repo
+
+## Credits
+
+Effects use pixelfx (MIT), Patch and Hugo Duprez. See [pixelfx/LICENSE](pixelfx/LICENSE) and [pixelfx/NOTICE.md](pixelfx/NOTICE.md).
