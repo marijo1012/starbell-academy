@@ -2,15 +2,15 @@
 
 A cosy school-fantasy side-scroller in the spirit of classic academy MMOs: enrol as a Freshman, choose a course (Blade, Archer or Mage), graduate, and follow the trouble out into the wider world.
 
-- **Play:** https://marijo1012.github.io/starbell-academy/ (once GitHub Pages is on and the game has been moved in)
+- **Play:** https://marijo1012.github.io/starbell-academy/
 - **Tech:** HTML5 Canvas + vanilla JavaScript, no build step
 - **Art:** original pixel art (Gemini and PixelLab)
 
 ## Status
 
-The game is being moved here from its original single-file Claude artifact so that art no longer has to be packed into one page (the artifact limit is 16 MB). See [MIGRATION.md](MIGRATION.md) for the plan.
+Live on GitHub Pages. Regions 1–3 (Lv 1–40) are playable; Region 4 (Clocktide Harbor, Lv 40–60) is designed and next to build. The move from the old single-file artifact is described in [MIGRATION.md](MIGRATION.md).
 
-## Planned layout
+## Layout
 
 ```
 index.html          game page + boot loader (reads manifest.json, then starts js/game.js)
@@ -27,6 +27,9 @@ audio/              music and sound effects (later)
 manifest.json       art manifest: frames, sizes, anchors, group (core or region), version hash
 ```
 
-## Design docs
+## Docs
 
-Game design lives in the Starbell Studio project (Game Bible, Art Asset List, Code Chat Release Notes).
+- [docs/GAME_BIBLE.md](docs/GAME_BIBLE.md): design source of truth
+- [docs/ART_ASSET_LIST.md](docs/ART_ASSET_LIST.md): art checklist, sizes and prompts
+- [docs/RELEASE_NOTES.md](docs/RELEASE_NOTES.md): what shipped
+- [CLAUDE.md](CLAUDE.md): how Claude works in this repo
