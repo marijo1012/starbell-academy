@@ -13,8 +13,9 @@ The game is being moved here from its original single-file Claude artifact so th
 ## Planned layout
 
 ```
-index.html          game page + boot loader
-js/                 game code split into modules
+index.html          game page + boot loader (reads manifest.json, then starts js/game.js)
+js/game.js          the game
+tools/              add_art.py (add or replace one art key), stamp.py (cache-busting build id)
 art/
   core/             UI, player classes, effects, pets (loaded at start)
   academy/          Region 1 art
@@ -23,7 +24,7 @@ art/
   harbor/           Region 4 art
   ...
 audio/              music and sound effects (later)
-manifest.json       art manifest: frames, sizes, anchors, region
+manifest.json       art manifest: frames, sizes, anchors, group (core or region), version hash
 ```
 
 ## Design docs
