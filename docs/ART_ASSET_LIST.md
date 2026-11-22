@@ -197,6 +197,8 @@ Paste the template from section 1, then the subject line below.
 ## 4b. Region 4: Clocktide Harbor (two acts, Lv 40–60) `PLANNED`
 
 Design in the Game Bible, sections 3.4 and 5.3–5.4. No size budget; follow the section 8 size guide.
+
+**Act 1 is live with placeholders (c757fed).** Art group: `harbor1` (Act 2 will be `harbor2`). Keys waiting for art: `crab_walk/_wind/_slam`, `gull`, `automaton_walk/_wind/_slam`, `jelly`, `colossus_idle/_walk/_wind/_leap/_slam/_hurt`, `npc_wren`, `npc_ottilie`, `pet_sparrow`, `kettle`, `ico_cog`, `bg_wharf_far`, `bg_docks_far`, `bg_rig_far`, `bg_light_far`, `t_{wharf,docks,rig,light}_top/_fill`, `p_{wharf,docks,rig,light}`, `ico_t9_*`, `ico_t10_*`. The *Starling* and the lamp are drawn in code and still need keys. Each one replaces its placeholder as soon as it is added with `tools/add_art.py`.
 Add the matching line to every Region 4 prompt:
 - **Act 1:** *"Floating sky-port above a sea of clouds, airships and brass clockwork, bright teal and brass palette."* (Lighthouse: *"stormy night, rain, navy and lightning-yellow palette."*)
 - **Act 2:** *"Glowing world beneath a sea of clouds, coral and shipwrecks, deep indigo with coral pink and bioluminescent cyan."*

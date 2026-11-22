@@ -186,7 +186,7 @@ Graduation also gives ×1.12 ATK and ×1.1 max HP.
 | 1 | Starbell Academy | 1–20 | Course at Lv 10, Graduation at Lv 20 | Gargoyle of the Old Bell | `LIVE` |
 | 2 | Lanternfall | 20–30 | Pets, Moonstone Key | Moonlit Chimera | `LIVE` |
 | 3 | **The Forbidden Archive** (beneath the academy) | 30–40 | Thesis at Lv 40 | The Headmaster's Shadow | `LIVE` |
-| 4 | **Clocktide Harbor** (sky-port + cloud-sea), two acts | 40–60 | Skyward Dock, airships, descent below the clouds | Brass Colossus (Lv 50, mid) · Tidecaller Kraken (Lv 60) | `PLANNED` |
+| 4 | **Clocktide Harbor** (sky-port + cloud-sea), two acts | 40–60 | Skyward Dock, airships, descent below the clouds | Brass Colossus (Lv 50, mid) · Tidecaller Kraken (Lv 60) | Act 1 `LIVE` (c757fed) · Act 2 `PLANNED` |
 | 5 | Emberfrost Peaks (mountain trial), two acts | 60–80 | Graduation pilgrimage | mid-boss TBD · Twin Drake (Lv 80) | `IDEA` |
 | 6 | Moonpetal Faewild (fairy court), two acts | 80–100 | Story finale, Postgraduate unlocks | mid-boss TBD · Thorn Queen (Lv 100) | `IDEA` |
 
@@ -241,7 +241,7 @@ All Region 3 art in the build is **placeholder**, made by recolouring existing s
 - **Prefect Lumen:** the ghost of a student prefect who went into the Archive a century ago and never came out. Cheerful, a bit lost, gives the region's story quests and the Little Grimoire pet. She also proposes the Thesis Defence.
   - *Line:* "Oh! A living student! Is the cafeteria still serving starbell pudding?"
 
-### 3.4 Region 4: Clocktide Harbor (Lv 40–60) `PLANNED`
+### 3.4 Region 4: Clocktide Harbor (Lv 40–60) Act 1 `LIVE` (c757fed) · Act 2 `PLANNED`
 
 **Concept:** a floating sky-port of airships and brass clockwork moored above a sea of clouds, and the strange world *beneath* those clouds. Act 1 is bright, windy and bustling; Act 2 dives into a glowing, eerie cloud-sea of coral, shipwrecks and a storm that never ends. The Umbral Page has hidden in that storm and woken the Tidecaller Kraken.
 
@@ -253,7 +253,8 @@ All Region 3 art in the build is **placeholder**, made by recolouring existing s
 - **Act 2** opens at **Lv 50** after the Brass Colossus and the lamp (quests 32–33): Wren takes the *Starling* down through the clouds to **Driftwood Outpost**.
 - The airship works both ways between all three hubs; every Harbor area joins the World Map once visited.
 
-#### Act 1: "The Sky-Port" (Lv 40–50)
+#### Act 1: "The Sky-Port" (Lv 40–50) `LIVE` (c757fed)
+Live: placeholders (recoloured sprites, code-drawn backgrounds/tiles/airship/kettle/lamp); the Rigging is stacked in four tiers up to the top of the screen (no vertical scrolling). Gusts every 7–9 s for 2 s; lightning every 2.5–4 s in the Lighthouse.
 
 | Area | Lv | Monsters | Notes |
 |---|---|---|---|
@@ -334,11 +335,11 @@ Base stats below are **design targets**. The game scales monsters with the code 
 | Portrait Mimic `LIVE` | 3 | 6,000 target | 280 | tuned | 130–220 | **"Mimic" AI:** sits still looking like a wall portrait; when you come close its eyes flash, then it lunges. 10% gear drop |
 | Cursed Armour `LIVE` | 3 | 9,000 target | 300 | tuned | 160–260 | Golem AI with a sword sweep in place of the punch. 16% gear drop |
 | **The Headmaster's Shadow** `LIVE` | 3 boss | **~120,000 live** (160,000 target) | 380 target | tuned | 5,000–7,000 | Three phases (below) |
-| Gear Crab `PLANNED` | 4 · Act 1 | role: tanky walker | — | — | — | **"Guard" AI:** scuttles toward you; every few seconds raises its brass claws and **blocks frontal hits for 1.5 s** (hit it from behind or wait it out) |
-| Kite Gull `PLANNED` | 4 · Act 1 | role: fragile flier | — | — | — | Bat AI. Circles above, then **dive-bombs** in a straight line (telegraphed by a cry and a pause) |
-| Rusted Automaton `PLANNED` | 4 · Act 1 | role: heavy | — | — | — | Golem AI. Wind-up punch, and a **steam vent** burst from the ground in front of it. 16% gear drop |
-| Storm Jelly `PLANNED` | 4 · both acts | role: slow floater | — | — | — | Floats slowly; every ~4 s pulses an **electric ring** (telegraphed glow). Touching it while charged stings |
-| **Brass Colossus** `PLANNED` | 4 · Act 1 boss (Lv 50) | ~1.3× the Shadow on the level curve | — | — | — | Three phases (section 5.3) |
+| Gear Crab `LIVE` | 4 · Act 1 | 2,812 live (Lv 42) | — | — | — | **"Guard" AI:** scuttles toward you; every few seconds raises its brass claws and **blocks frontal hits for 1.5 s** (hit it from behind or wait it out) |
+| Kite Gull `LIVE` | 4 · Act 1 | 1,563 live (Lv 43) | — | — | — | Bat AI. Circles above, then **dive-bombs** in a straight line (telegraphed by a cry and a pause) |
+| Rusted Automaton `LIVE` | 4 · Act 1 | 6,166 live (Lv 48) | — | — | — | Golem AI. Wind-up punch, and a **steam vent** burst from the ground in front of it. 16% gear drop |
+| Storm Jelly `LIVE` | 4 · both acts | 2,200 live (Lv 46) | — | — | — | Floats slowly; every ~4 s pulses an **electric ring** (telegraphed glow). Touching it while charged stings |
+| **Brass Colossus** `LIVE` | 4 · Act 1 boss (Lv 50) | ~1.3× the Shadow on the level curve (**232,050 live**, ATK 306) | — | — | — | Three phases (section 5.3) |
 | Reef Puffer `PLANNED` | 4 · Act 2 | role: tanky walker | — | — | — | Waddles toward you; when hit hard (or every ~6 s) it **puffs up**: takes 50% less damage for 2 s, then **bursts spines** in a ring (telegraphed swell). Back off while it's puffed |
 | Siren Eel `PLANNED` | 4 · Act 2 | role: fast swimmer | — | — | — | Swims through the air in a wavy line, then lunges. Every ~10 s sings a **lullaby** (visible music notes, 1 s warning): you're slowed 25% for 2 s if within range |
 | Ghost Deckhand `PLANNED` | 4 · Act 2 | role: medium melee | — | — | — | Ghostly sailor with a cutlass. Slashes, and throws a **spectral anchor** that drops on a marked spot. On death it **rises again once** at 30% HP unless you hit its floating spirit within 3 s |
@@ -365,7 +366,7 @@ A tall silhouette in a headmaster's robe and mortarboard, made of ink and violet
 - **Every big attack is telegraphed** (a red mark on the floor or a glowing outline first) so the fight is about dodging.
 - *Defeat line:* "The Shadow shrieks as the bell seal flares… and a single black page tears free and flies upward."
 
-### 5.3 The Brass Colossus (Lv 50 mid-boss) `PLANNED`
+### 5.3 The Brass Colossus (Lv 50 mid-boss) `LIVE` (c757fed)
 The Stormglass Lighthouse's storm engine, twisted by the Umbral Page's storm into a towering brass giant: piston arms, a furnace belly glowing orange, lightning coils on its shoulders and the dark lighthouse lamp as its head. Fought on the lighthouse deck in the rain.
 
 | Phase | HP | Attacks |
@@ -444,8 +445,8 @@ Two tiers per 10 levels (four per two-act region), plus one Postgraduate-only ti
 | 6 | Astral | `#9fe8ff` | 30 | **40,000** | 46 | 14 / 183 | Marlo | `LIVE` |
 | 7 | **Inkbound** | `#7f8cff` | 35 | 70,000 | 53 | 16 / 211 | Quillon | `LIVE` |
 | 8 | **Sealbreaker** | `#ff6a9a` | 40 | **110,000** `LIVE` | 60 | 19 / 239 | Quillon | `LIVE` |
-| 9 | **Tidebrass** | `#d9a441` | 45 | 170,000 | 67 | 21 / 267 | Ottilie (Harbor Act 1) | `PLANNED` |
-| 10 | **Stormglass** | `#5ad1c6` | 50 | 260,000 | 74 | 23 / 295 | Ottilie (Harbor Act 1) | `PLANNED` |
+| 9 | **Tidebrass** | `#d9a441` | 45 | 170,000 | 67 | 21 / 267 | Ottilie (Harbor Act 1) | `LIVE` (c757fed) |
+| 10 | **Stormglass** | `#5ad1c6` | 50 | 260,000 | 74 | 23 / 295 | Ottilie (Harbor Act 1) | `LIVE` (c757fed) |
 | 11 | **Coralsteel** | `#ff8a7a` | 55 | 380,000 | 81 | 25 / 323 | Barnaby (Harbor Act 2) | `PLANNED` |
 | 12 | **Leviathan** | `#3a6df0` | 60 | 540,000 | 88 | 27 / 351 | Barnaby (Harbor Act 2) | `PLANNED` |
 | 13–16 | Region 5 tiers | TBD | 65 / 70 / 75 / 80 | TBD | 95 / 102 / 109 / 116 | — | Region 5 | `IDEA` |
@@ -475,7 +476,7 @@ Quest item: **Lost Page** (drops only while its quest is active, ~25% from Archi
 | Lantern Moth | +8% ATK | Pip, 5,000 | `LIVE` |
 | Star Wisp | +6% crit, +15% gold | Pip, 8,000 | `LIVE` |
 | **Little Grimoire** | +10% max SP, −5% skill cooldowns | Reward from Prefect Lumen's "Missing Pages" quest (shows as "Quest reward" in Pip's list) | `LIVE` |
-| **Clockwork Sparrow** | +15% Star Shard drop rate, and a 50% bigger pickup range | Reward from Ottilie's "Spare Parts" quest (Harbor Act 1) | `PLANNED` |
+| **Clockwork Sparrow** | +15% Star Shard drop rate, and a 50% bigger pickup range | Reward from Ottilie's "Spare Parts" quest (Harbor Act 1) | `LIVE` (c757fed) |
 | **Nimbus the Cloud-Whale Calf** | Restores 1% max HP every 4 s | Reward from Nerissa's "Lost at Sea" quest (Harbor Act 2) | `PLANNED` |
 | Snow Fox Kit | TBD | Region 5 | `IDEA` |
 | Tiny Ladybug | TBD | Region 6 | `IDEA` |
@@ -516,15 +517,15 @@ All pets fly to drops and pick them up, and level up (+10% buff per level).
 | 22 | **Hollow Guard** | 8 Cursed Armours | Inkbound weapon | `LIVE` |
 | 23 | **The Headmaster's Shadow** | Defeat the Shadow (recommended Lv 38+) | Sealbreaker charm | `LIVE` |
 | 24 | **Thesis Defence** | Reach Lv 40, then defeat Your Shadow in the Sealed Vault | **Master title** (all skills upgraded) + Sealbreaker weapon | `LIVE` |
-| 25 | **All Aboard** | Defeat the Shadow, reach Lv 40, and board the *Starling* at the Skyward Dock | 10 potions, 10 ethers | `PLANNED` |
-| 26 | **Mind the Gears** | Talk to Ottilie Spanner in Brassbell Wharf | 10 Star Shards | `PLANNED` |
-| 27 | **Pinch Points** | 20 Gear Crabs in Cogwind Docks | Sealbreaker charm | `PLANNED` |
-| 28 | **Gull-ible** | 20 Kite Gulls | 10 potions, 5 ethers | `PLANNED` |
-| 29 | **Spare Parts** | Collect 12 Brass Cogs for Ottilie (quest-only drop, ~25% from Act 1 monsters) | **Clockwork Sparrow** pet | `PLANNED` |
-| 30 | **Rust Bucket** | 10 Rusted Automatons in Cloudsail Rigging | Tidebrass weapon | `PLANNED` |
-| 31 | **Shock Value** | 15 Storm Jellies | Tidebrass charm | `PLANNED` |
-| 32 | **Engine Trouble** | Defeat the Brass Colossus on the lighthouse deck (recommended Lv 48+) | Stormglass weapon | `PLANNED` |
-| 33 | **Light the Lamp** | Relight the Stormglass lamp (interact object at the top of the lighthouse) | 15 Star Shards | `PLANNED` |
+| 25 | **All Aboard** | Defeat the Shadow, reach Lv 40, and board the *Starling* at the Skyward Dock | 10 potions, 10 ethers | `LIVE` (c757fed) |
+| 26 | **Mind the Gears** | Talk to Ottilie Spanner in Brassbell Wharf | 10 Star Shards | `LIVE` (c757fed) |
+| 27 | **Pinch Points** | 20 Gear Crabs in Cogwind Docks | Sealbreaker charm | `LIVE` (c757fed) |
+| 28 | **Gull-ible** | 20 Kite Gulls | 10 potions, 5 ethers | `LIVE` (c757fed) |
+| 29 | **Spare Parts** | Collect 12 Brass Cogs for Ottilie (quest-only drop, ~25% from Act 1 monsters) | **Clockwork Sparrow** pet | `LIVE` (c757fed) |
+| 30 | **Rust Bucket** | 10 Rusted Automatons in Cloudsail Rigging | Tidebrass weapon | `LIVE` (c757fed) |
+| 31 | **Shock Value** | 15 Storm Jellies | Tidebrass charm | `LIVE` (c757fed) |
+| 32 | **Engine Trouble** | Defeat the Brass Colossus on the lighthouse deck (recommended Lv 48+) | Stormglass weapon | `LIVE` (c757fed) |
+| 33 | **Light the Lamp** | Relight the Stormglass lamp (interact object at the top of the lighthouse) | 15 Star Shards | `LIVE` (c757fed) |
 | 34 | **Going Down** | Reach Lv 50 and ride the *Starling* down to Driftwood Outpost | 10 potions, 10 ethers | `PLANNED` |
 | 35 | **Old Salt** | Talk to Old Barnaby Finch at Driftwood Outpost | 10 Star Shards | `PLANNED` |
 | 36 | **Puffed Up** | 25 Reef Puffers in Undertow Reef | Stormglass charm | `PLANNED` |
@@ -844,11 +845,11 @@ Everything in Regions 1–3 now has real art and the feedback tools are live, so
 ### 16.4 Region 4 design (design chat) `DONE`
 Written in full as a two-act region (Lv 40–60): section 3.4, 5, 5.3–5.4, 7, 8 (quests 25–42) and the build list in section 17. Art list in the Art Asset List, section 4b.
 
-## 17. Region 4 build list `PLANNED`
+## 17. Region 4 build list Act 1 `LIVE` (c757fed) · Act 2 `PLANNED`
 
 Two-act region, Lv 40–60. Build Act 1 and Act 2 as two releases if that's easier (Act 1 first). Use recoloured placeholders until Mario's art arrives (Art Asset List section 4b). New art goes in a `harbor` group (or `harbor1` / `harbor2` if the code chat prefers splitting by act).
 
-**Act 1 (Lv 40–50)**
+**Act 1 (Lv 40–50)** `LIVE` (c757fed) (items 1–8; plus the Act 1 parts of 16–20: Harbor drops tier 8–9 / Colossus 10, ~17–19 kills per level, Colossus Boss Rush wave, Full Steam). Quest EXP set to 3k–20k (see release notes).
 1. **Skyward Dock** in the Courtyard (appears after the Shadow is defeated; opens at Lv 40) and *Starling* airship travel; Harbor areas on the World Map.
 2. **Brassbell Wharf:** Teakettle Boiler (heal), Captain Wren (dialogue + story), Ottilie (dialogue, then shop: Tier 9–10, Shard ×10, potion/ether packs).
 3. **Fields:** Cogwind Docks (Lv 42), Cloudsail Rigging (Lv 46, tall vertical layout), Stormglass Lighthouse (Lv 48).
