@@ -459,6 +459,7 @@ Tiers 1–4 are sold at the Academy Shop, tiers 5–6 only by Marlo in Lanternfa
 ### 7.2 Upgrading (+1 to +10) `LIVE`
 Each level adds +10% to the item's stats. Cost: (150 + 250×tier) × (next level) gold, plus (next level) Star Shards.
 Success: 100% to +3, 75% to +6, 55% to +8, 40% to +10. Failing costs only the materials; gear never breaks.
+Upgraded weapons glow (+1–3 faint, +4–6, +7–10 strongest, in the tier colour) `LIVE` (bf91065).
 
 ### 7.3 Consumables
 Potion (40% HP) 25g · Ether (50% SP) 40g · Star Shard 200g · Potion ×10 230g and Ether ×10 360g (Marlo). Respec is free via the Reset stats / Reset skills buttons (no scroll).

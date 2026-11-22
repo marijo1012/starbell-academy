@@ -48,7 +48,7 @@ For backgrounds: replace the frame part with "wide side-scrolling game backgroun
 Elite (~9%) and shiny (~1%) monsters are live and use code tints of existing sprites, so they need no new art.
 
 ### Characters (idle 2 · walk · jump · attack · hurt each)
-✅ Freshman · ✅ Blade Cadet · ✅ Wind Archer · ✅ Spark Mage · ✅ Bell Knight · ✅ Gale Ranger · ✅ Astral Scholar
+✅ Freshman · ✅ Blade Cadet · ✅ Wind Archer · ✅ Spark Mage (new idle + blink, 4-frame walk with staff, 23 Nov) · ✅ Bell Knight · ✅ Gale Ranger (4-frame walk with bow, 23 Nov) · ✅ Astral Scholar
 
 ### Monsters
 | Monster | Frames |
@@ -57,17 +57,17 @@ Elite (~9%) and shiny (~1%) monsters are live and use code tints of existing spr
 | ✅ Page Worm | crawl |
 | ✅ Quill Bat | flap |
 | ✅ Chalk Golem | walk, wind-up, slam |
-| ✅ Gargoyle (boss) | idle, walk, wind-up, leap, slam, hurt |
-| ✅ Bog Frog | sit, crouch, jump |
+| ✅ Gargoyle (boss) | idle (breathing pair, 23 Nov), walk (5 frames, new frame 4 on 23 Nov), wind-up, leap, slam, hurt |
+| ✅ Bog Frog | sit, crouch, jump (new airborne frame, 23 Nov) |
 | ✅ Mist Wisp | flutter 3 |
 | ✅ Rune Sentinel | walk, wind-up, slam |
 | ✅ Moonlit Chimera (boss) | idle, walk, wind-up, leap, slam, hurt |
 
 ### NPCs and objects
-✅ Shopkeeper · ✅ Notice board · ✅ Fountain · ✅ Marlo the Outfitter · ✅ Pip the Pet Keeper · ✅ Lantern Well · ✅ Lantern Gate (4-frame swirl)
+✅ Shopkeeper · ✅ Notice board · ✅ Fountain · ✅ Marlo the Outfitter · ✅ Pip the Pet Keeper (idle + wave, 23 Nov) · ✅ Lantern Well · ✅ Lantern Gate (4-frame swirl)
 
 ### Pets (3-frame loop)
-✅ Pocket Chick · ✅ Mochi · ✅ Lantern Moth · ✅ Star Wisp
+✅ Pocket Chick · ✅ Mochi · ✅ Lantern Moth (new wings-down frame, 23 Nov) · ✅ Star Wisp
 
 ### Backgrounds and tiles (bg far/mid/near · ground top + fill · platform)
 | Area | Layers |
@@ -82,7 +82,7 @@ Elite (~9%) and shiny (~1%) monsters are live and use code tints of existing spr
 | ✅ Moonlit Dome | far, mid, near, tiles, platform |
 
 ### Effects
-✅ Slash · ✅ Hit spark · ✅ Ember · ✅ Frost ring · ✅ Meteor · ✅ Comet · ✅ Shockwave · ✅ Arrow · ✅ Gale · ✅ Orb · ✅ Whirl (Blade + Ranger) · ✅ Volley · ✅ Tolling Guard aura · ✅ Level-up · ✅ Upgrade success / fail · ✅ Glow
+✅ Slash · ✅ Hit spark · ✅ Ember · ✅ Frost ring · ✅ Meteor · ✅ Comet · ✅ Shockwave · ✅ Arrow · ✅ Gale · ✅ Orb · ✅ Whirl (Blade + Ranger) · ✅ Volley · ✅ Tolling Guard aura · ✅ Level-up · ✅ Upgrade success / fail · ✅ Weapon upgrade glow (pixelfx, drawn in code since 23 Nov; the old glow art is retired)
 
 ### Icons
 - ✅ Skills: 4 per course (12) + 3 advanced skills
@@ -100,6 +100,7 @@ These would improve the existing game. None of them block anything.
 - [x] **Astral star bolt**: blue star projectile for the Scholar's basic attack · 2–3 frames · ~64×64
 - [x] **Bell Knight slash trail**: gold crescent arc · 3–4 frames · ~192×128
 - [x] **Spinning gold coin** drop (the coin is a single frame now) · 4 frames · ~32×32
+- [ ] **Walks with the weapon in every frame** for Blade Cadet, Freshman, Bell Knight and Laureate (the upgrade glow only shows on frames where the weapon is drawn)
 - [ ] **Monster hurt/flash frames** for slimes, worm, bat, frog, wisp (optional; the game flashes them white now)
 
 ---
@@ -135,7 +136,7 @@ Add this line to every Region 3 prompt: *"Dark candlelit magical library undergr
 - [x] **Blotling**: round living ink blob with two big white eyes and a drip "tail" · hop loop 3 frames (squash, normal, stretch)
   - [ ] **Mini Blotling**: optional; the game can just shrink the Blotling
 - [x] **Inkwraith**: small hooded ghost made of flowing ink, glowing gold eyes, wispy ink trail · float 3 frames + swoop 1 frame
-- [x] **Portrait Mimic**: a gilded picture frame with a painted face that comes alive · 4 frames: disguised (calm painting), eyes open (glowing), lunge (frame tilted forward, mouth open), hurt
+- [x] **Portrait Mimic**: a gilded picture frame with a painted face that comes alive · 4 frames: disguised (calm painting), eyes open (glowing), lunge (frame tilted forward, mouth open), hurt · plus a 4-frame walk (23 Nov)
 - [x] **Cursed Armour**: empty suit of knight armour with violet light inside the helmet · walk 2, wind-up 1 (sword raised), sweep 1 (sword swung low)
 
 ### 4.2 Boss: The Headmaster's Shadow (~260×200 frames)
