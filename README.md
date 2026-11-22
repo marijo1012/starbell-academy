@@ -15,6 +15,7 @@ The game is being moved here from its original single-file Claude artifact so th
 ```
 index.html          game page + boot loader (reads manifest.json, then starts js/game.js)
 js/game.js          the game
+js/pixelfx.js       bundled pixelfx effects (weapon upgrade glow); sources in pixelfx/, rebuild with tools/bundle_pixelfx.py
 tools/              add_art.py (add or replace one art key), stamp.py (cache-busting build id)
 art/
   core/             UI, player classes, effects, pets (loaded at start)
@@ -30,3 +31,7 @@ manifest.json       art manifest: frames, sizes, anchors, group (core or region)
 ## Design docs
 
 Game design lives in the Starbell Studio project (Game Bible, Art Asset List, Code Chat Release Notes).
+
+## Credits
+
+Effects use pixelfx (MIT), Patch and Hugo Duprez. See [pixelfx/LICENSE](pixelfx/LICENSE) and [pixelfx/NOTICE.md](pixelfx/NOTICE.md).

@@ -572,7 +572,7 @@ function drawEq(){if(!$('mEquip').classList.contains('on')||!P)return;requestAni
   if(it){eqText(g,it.name,tx,76,8,tcol(it.t),'left','700',false,76);eqText(g,sl==='weapon'?'ATK '+ua(it,'atk')+' · Tier '+it.t:'DEF '+ua(it,'def')+' · HP '+ua(it,'hp'),tx,90,7.5,'#4a3f6b','left','700',false,76)}
   else eqText(g,'Empty',tx,77,7.5,'#9a8a70','left','700')}
  {const k=lookKey(spk()+'_idle'),m=MAN[k],im=IMG[k];if(im&&m){const n=m.n||1,f=sqI(k,now*2.2,n),s=Math.min(1,80/m.fh/(m.ds||1))/(m.ds||1),q=SEQ[k.split(/[#@]/)[0]],bob=q&&q.bob?Math.round(q.bob/2*(.5-.5*Math.cos(now*6.2832/(q.per||1.6)))):0;
-  const gu=P.weapon?(P.weapon.up||0):0,bk=spk()+'_idle';if(gu>=4)wGlow(g,bk,now*2.2,172,153-bob,s,false,gu,0,now);g.drawImage(im,f*m.fw,0,m.fw,m.fh,Math.round(172-m.ax*s),Math.round(153-m.ay*s-bob),m.fw*s,m.fh*s);if(gu>=4)wGlow(g,bk,now*2.2,172,153-bob,s,false,gu,1,now)}}
+  g.drawImage(im,f*m.fw,0,m.fw,m.fh,Math.round(172-m.ax*s),Math.round(153-m.ay*s-bob),m.fw*s,m.fh*s);wGlow(g,spk()+'_idle',now*2.2,172,153-bob,s*(m.ds||1),false,P.weapon,1,now,'eq')}}
  if(P.pet&&PETS[P.pet]){const pd=PETS[P.pet],k=pd.key,m=MAN[k],im=IMG[k];if(im&&m){const n=m.n||1,f=sqI(k,now*6,n),ds=m.ds||1,s=pd.s/ds*.8,y=128+Math.round(Math.sin(now*2.4)*3);g.drawImage(im,f*m.fw,0,m.fw,m.fh,Math.round(210-m.fw*s/2),Math.round(y-m.fh*s/2),m.fw*s,m.fh*s)}}
  eqText(g,'Tap a card to change or upgrade',14,129,6.5,'#8a7350','left','600');
  const w=P.weapon,ch=P.charm;eqText(g,'Total: ATK '+(ua(w||{},'atk')+cAtk(ch))+' · DEF '+ua(ch||{},'def')+' · HP '+ua(ch||{},'hp'),330,129,7,'#5a4320','right','700')}
@@ -580,25 +580,27 @@ $('eqCv').addEventListener('click',e=>{const r=$('eqCv').getBoundingClientRect()
  for(const sl of ['weapon','charm']){const [cx,cy,cw,ch]=EQL[sl].card;if(x>=cx&&x<=cx+cw&&y>=cy&&y<=cy+ch){closeAll();BF=sl;openBag();BF=sl;renderBag();return}}});
 $('bEquip').onclick=()=>{if(state==='play'&&!DQ)openEquip()};$('bEq2').onclick=()=>{closeAll();openEquip()};
 
-/* ---------- weapon-shaped upgrade glow (wm_<outfit>_<anim> masks: weapon pixels only, one per frame) ---------- */
-const WG={};
-function wgData(base){if(WG[base]!==undefined)return WG[base];const mk='wm_'+base,im=IMG[mk],m=MAN[mk];if(!im||!m)return WG[base]=null;
- const c=document.createElement('canvas');c.width=im.width;c.height=im.height;const g=c.getContext('2d');g.drawImage(im,0,0);const pts=[];
- try{const d=g.getImageData(0,0,c.width,c.height).data;for(let f=0;f<m.n;f++){const L=[];for(let y=0;y<m.fh;y+=2)for(let x=f*m.fw;x<(f+1)*m.fw;x+=2)if(d[(y*c.width+x)*4+3]>128)L.push([x-f*m.fw,y]);pts.push(L)}}catch(e){}
- return WG[base]={im,m,pts,tint:{}}}
-function wgTint(D,col){if(D.tint[col])return D.tint[col];const c=document.createElement('canvas');c.width=D.im.width;c.height=D.im.height;const g=c.getContext('2d');g.drawImage(D.im,0,0);g.globalCompositeOperation='source-in';g.fillStyle=col;g.fillRect(0,0,c.width,c.height);return D.tint[col]=c}
-const WGS=document.createElement('canvas');
-function wGlow(g,k,i,x,y,s,flip,up,over,tt){const base=k.split(/[#@]/)[0],D=wgData(base);if(!D)return;const m=D.m,f=sqI(base,i,m.n),L=D.pts[f];if(!L||!L.length)return;tt=tt==null?T:tt;
- const lv=up>=10?2:up>=7?1:0,col=['#9fd0ff','#ffd23f','#ff9ad8'][lv],str=[.6,.85,1][lv];
- g.save();g.translate(Math.round(x),Math.round(y)-(g===ctx?sqB(base)+0:0)+(g===ctx&&XF&&XF.dy||0));if(flip)g.scale(-1,1);if(XF&&g===ctx){if(XF.r)g.rotate(XF.r);if(XF.sx||XF.sy)g.scale(XF.sx||1,XF.sy||1)}
- const sx0=f*m.fw,ox=-m.ax*s,oy=-m.ay*s,w=m.fw*s,h=m.fh*s,d=g===ctx?2:1.5;
- if(!over){/* soft 1-2 px outline around the weapon, drawn under the sprite */const tc=wgTint(D,col);g.globalAlpha=str*(.8+.2*Math.sin(tt*4));g.globalCompositeOperation='source-over';
-  for(const [dx,dy] of [[-d,0],[d,0],[0,-d],[0,d],[-d,-d],[d,d],[-d,d],[d,-d]])g.drawImage(tc,sx0,0,m.fw,m.fh,ox+dx,oy+dy,w,h)}
- else{/* shimmer band sliding along the weapon + sparkles on weapon pixels */WGS.width=m.fw;WGS.height=m.fh;const q=WGS.getContext('2d');q.clearRect(0,0,m.fw,m.fh);q.globalCompositeOperation='source-over';q.drawImage(wgTint(D,'#ffffff'),sx0,0,m.fw,m.fh,0,0,m.fw,m.fh);
-  const ph=((tt*.55)%1.6)-.3,gr=q.createLinearGradient(0,m.fh,m.fw,0);gr.addColorStop(clamp(ph-.12,0,1),'rgba(255,255,255,0)');gr.addColorStop(clamp(ph,0,1),'rgba(255,255,255,1)');gr.addColorStop(clamp(ph+.12,0,1),'rgba(255,255,255,0)');
-  q.globalCompositeOperation='destination-in';q.fillStyle=gr;q.fillRect(0,0,m.fw,m.fh);g.globalCompositeOperation='source-over';g.globalAlpha=.7*str;g.drawImage(WGS,0,0,m.fw,m.fh,ox,oy,w,h);
-  g.globalAlpha=1;const nS=1+lv*2,seed=Math.floor(tt*5);for(let j=0;j<nS;j++){const p=L[(seed*7919+j*104729)%L.length],a=.5+.5*Math.sin(tt*9+j*2.1),px=ox+p[0]*s,py=oy+p[1]*s,r=(1.2+lv*.6)*a;g.fillStyle=col;g.fillRect(px-r,py-.5,r*2,1);g.fillRect(px-.5,py-r,1,r*2);g.fillStyle='#fff';g.fillRect(px-.5,py-.5,1,1)}}
- g.restore()}
+/* ---------- weapon upgrade glow (pixelfx: enhance-sword / -bow / -staff, drawn live) ----------
+   WPTS: hand-marked weapon points per outfit x animation x frame, in the strip's frame pixels.
+   sword/bow [ax,ay, mx,my, bx,by, halfWidth] (guard, blade middle, tip | top tip, grip, bottom tip); staff [gripX,gripY, headX,headY]; null = no weapon drawn. */
+const WPTS={"blade_idle":[[70,82,83,60,97,34,2],[69,83,83,61,98,36,2]],"blade_walk":[[22,101,55,117,88,125,2],null,null,null,null],"blade_jump":[[124,66,153,57,183,47,2]],"blade_attack":[[104,84,128,72,152,58,2],[133,61,160,50,188,37,2],null],"blade_hurt":[null],"fresh_idle":[[68,78,87,59,106,41,2.5],[68,79,87,60,106,42,2.5]],"fresh_walk":[[22,95,50,104,78,113,2.5],null,null,null,null],"fresh_jump":[[103,50,124,32,145,14,2.5]],"fresh_attack":[[103,82,128,68,152,55,2.5],[124,60,152,46,180,32,2.5],null],"fresh_hurt":[null],"knight_idle":[[80,82,101,59,122,37,3],[80,82,101,60,122,38,3]],"knight_walk":[[28,104,60,116,92,128,3],null,null,null,null],"knight_jump":[[110,62,138,50,166,38,3]],"knight_attack":[[108,82,134,67,160,52,3],[142,60,166,46,190,32,3],null],"knight_hurt":[null],"warden_idle":[[102,104,137,123,171,142,4],[102,104,137,123,171,142,4]],"warden_walk":[[116,96,150,117,186,138,4],[105,100,140,118,175,135,4],[108,102,146,120,185,139,4],[103,103,145,120,186,137,4],[102,100,145,118,187,135,4]],"warden_jump":[[76,36,40,19,4,3,4]],"warden_attack":[[165,34,124,18,83,3,4],[133,62,94,38,54,12,4],[176,138,222,155,268,172,4]],"warden_hurt":[[92,40,48,32,4,28,4]],"archer_idle":[[96,34,84,70,60,90,1.5],[96,35,84,70,60,90,1.5]],"archer_walk":[[98,34,87,70,62,90,1.5],[106,33,88,70,63,89,1.5],[99,34,87,72,63,89,1.5],[110,33,96,72,73,90,1.5]],"archer_jump":[[105,33,90,72,66,92,1.5]],"archer_attack":[[80,7,107,74,80,122,1.5],[80,7,104,70,79,120,1.5],[79,4,107,74,90,124,1.5]],"archer_hurt":[[98,37,80,82,58,99,1.5]],"ranger_idle":[[111,38,102,68,80,98,1.5],[94,54,88,82,76,108,1.5]],"ranger_walk":[[115,43,104,70,82,103,1.5],null,null],"ranger_jump":[[124,33,110,74,80,108,1.5]],"ranger_attack":[[83,4,108,62,85,116,1.5],null,null],"ranger_hurt":[[62,6,76,44,70,85,1.5]],"laureate_idle":[[127,20,108,58,97,92,1.5],[127,20,108,58,97,92,1.5]],"laureate_walk":[null,null,null,null,null],"laureate_jump":[null],"laureate_attack":[[146,10,172,70,150,138,1.5],[150,10,181,80,153,158,1.5],[154,26,181,88,153,175,1.5]],"laureate_hurt":[[124,7,154,87,126,162,1.5]],"mage_idle":[[92,90,104,52],[98,90,107,50]],"mage_walk":[[99,87,117,44],null,null],"mage_jump":[[87,72,105,31]],"mage_attack":[null,null,null],"mage_hurt":[[88,38,72,6]],"prof_idle":[[88,104,98,70],[90,105,100,70]],"prof_walk":[[100,72,110,48],[99,72,109,48],[100,73,110,49],[101,71,111,47],[101,71,111,47]],"prof_jump":[[104,63,123,39]],"prof_attack":[[123,77,141,45],[108,86,146,83],[126,88,157,87]],"prof_hurt":[[97,66,101,39]],"scholar_idle":[[97,92,109,52],[94,92,105,52]],"scholar_walk":[[116,95,127,56],[113,95,128,59],[117,95,129,56],[114,95,127,55]],"scholar_jump":[[123,73,136,50]],"scholar_attack":[[117,67,135,36],[115,83,163,79],[120,81,157,79]],"scholar_hurt":[[97,50,80,14]]};
+const WKIND={blade:'sword',fresh:'sword',knight:'sword',warden:'sword',archer:'bow',ranger:'bow',laureate:'bow',mage:'staff',prof:'staff',scholar:'staff'};
+const wLv=up=>up>=7?3:up>=4?2:up>=1?1:0;
+function tierRamp(t){const c=TIERC[t]||TIERC[1],v=parseInt(c.slice(1),16),r=v>>16&255,g=v>>8&255,b=v&255,h=(x,y,z)=>'#'+[x,y,z].map(n=>Math.round(Math.max(0,Math.min(255,n))).toString(16).padStart(2,'0')).join(''),
+ k=f=>h(r*f,g*f,b*f),w=f=>h(r+(255-r)*f,g+(255-g)*f,b+(255-b)*f);return [k(.15),k(.4),k(.7),c,w(.35),w(.7),'#ffffff']}
+const WFX={};const WFB={};
+function wfxGet(slot,kind,lv,tier){const id=kind+'|'+lv+'|'+tier;let e=WFX[slot];if(!e||e.id!==id){e=WFX[slot]={id,fx:PFX.createFx(PFX.FX[kind],{x:0,y:0,level:lv,palette:tierRamp(tier),string:true,orb:1}),t:null}}return e}
+/* g: target context; k: sprite key; i: frame index as passed to fr(); x,y,s,flip: same as the sprite draw; it: equipped weapon; a: alpha; tt: clock; slot: separate instance per view */
+function wGlow(g,k,i,x,y,s,flip,it,a,tt,slot){if(!it||!(it.up>0)||typeof PFX==='undefined')return;const base=k.split(/[#@]/)[0],L=WPTS[base],kind=WKIND[base.split('_')[0]],m=MAN[base];if(!L||!kind||!m)return;
+ const f=sqI(base,i,m.n),p=L[f];if(!p)return;const e=wfxGet(slot||'g',kind,wLv(it.up),it.t);const dt=e.t==null?0:Math.max(0,Math.min(.1,tt-e.t));e.t=tt;e.fx.update(dt);
+ /* the effect is computed on the game's own pixel grid: the sprite's points (frame px, relative to its anchor) times the sprite's draw scale */
+ const sc=s/(m.ds||1),P2=(u,v)=>[(u-m.ax)*sc,(v-m.ay)*sc],o=e.fx.options;
+ if(kind==='staff'){o.a=P2(p[0],p[1]);o.b=P2(p[2],p[3]);o.orb=.8}else{o.a=P2(p[0],p[1]);o.m=P2(p[2],p[3]);o.b=P2(p[4],p[5]);o.width=Math.max(1,p[6]*sc)}
+ const PAD=22,fw=Math.ceil(m.fw*sc)+PAD*2,fh=Math.ceil(m.fh*sc)+PAD*2,ox=-Math.ceil(m.ax*sc)-PAD,oy=-Math.ceil(m.ay*sc)-PAD,key=fw+'x'+fh+'|'+ox+'|'+oy;let B=WFB[key];
+ if(!B){const c=document.createElement('canvas');c.width=fw;c.height=fh;B=WFB[key]={c,g:c.getContext('2d'),fr:PFX.createFrame(fw,fh,ox,oy),id:new ImageData(fw,fh)}}
+ PFX.clearFrame(B.fr);e.fx.draw(B.fr);PFX.composite(B.fr,B.id.data,null);B.g.putImageData(B.id,0,0);
+ g.save();g.translate(Math.round(x),Math.round(y)-(g===ctx?sqB(base)+(XF&&XF.dy||0):0));if(flip)g.scale(-1,1);if(XF&&g===ctx){if(XF.r)g.rotate(XF.r);if(XF.sx||XF.sy)g.scale(XF.sx||1,XF.sy||1)}
+ g.imageSmoothingEnabled=false;g.globalAlpha*=a==null?1:a;g.drawImage(B.c,ox,oy);g.restore()}
 
 /* ---------- panels ---------- */
 function closeAll(){document.querySelectorAll('.modal:not(#mStart):not(#mId)').forEach(m=>m.classList.remove('on'));paused=false}
@@ -1092,7 +1094,7 @@ function drawPlayer(){
   ctx.fillStyle='#0003';ctx.beginPath();ctx.ellipse(sx,sy,16,4,0,0,7);ctx.fill();
   if(P.whirl>0&&IMG.fx_whirl)k=(c==='ranger'&&IMG.fx_whirl_r)?'fx_whirl_r':'fx_whirl';else if(P.deadT>0||P.hurtA>0)k=c+'_hurt';else if(P.atkA>0){const e=ATKD-P.atkA;k=c+'_attack';i=e<.18?0:e<.25?1:2;if(c==='mage'&&i===0)k='mage_idle'}else if(!P.onG)k=c+'_jump';else if(Math.abs(P.vx)>1){k=c+'_walk';i=P.anim}else{k=c+'_idle';i=T*2.2}
   if(P.guard>0){if(IMG.aura){ctx.save();ctx.globalAlpha=.55+.25*Math.sin(T*6);fr('aura',T*4,sx,sy+22,.46);ctx.restore()}else{ctx.strokeStyle='#ffd23f99';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(sx,sy-30,30,42,0,0,7);ctx.stroke()}}
-  const bob=k===c+'_walk'?Math.abs(Math.sin(P.anim*Math.PI))*2.5:0;{const lk=k.indexOf('fx_')===0?k:lookKey(k),pk=P.thesis&&c!==THSPR[P.cls]&&k.indexOf('fx_')!==0?eliteKey(lk,'master'):lk,tj=T-(P.toAt||-9),tl=T-(P.ldAt||-9);XF=k.indexOf('fx_')===0?null:tj<.12?{sx:.92,sy:1.08}:tl<.09?{sx:1.1,sy:.9}:k==='archer_walk'?{r:.05}:null;const gu=P.weapon&&P.deadT<=0&&!(P.hurtA>0)&&k.indexOf('fx_')!==0?(P.weapon.up||0):0;if(gu>=4)wGlow(ctx,k,i,sx,sy+2-bob,.5,P.dir<0,gu,0);fr(pk,i,sx,sy+2-bob,.5,P.dir<0);if(gu>=4)wGlow(ctx,k,i,sx,sy+2-bob,.5,P.dir<0,gu,1);if(P.hurtA>.25&&P.deadT<=0){const a0=ctx.globalAlpha;ctx.globalAlpha=a0*.85;fr(pk,i,sx,sy+2-bob,.5,P.dir<0,1);ctx.globalAlpha=a0}XF=null}ctx.restore();return}
+  const bob=k===c+'_walk'?Math.abs(Math.sin(P.anim*Math.PI))*2.5:0;{const lk=k.indexOf('fx_')===0?k:lookKey(k),pk=P.thesis&&c!==THSPR[P.cls]&&k.indexOf('fx_')!==0?eliteKey(lk,'master'):lk,tj=T-(P.toAt||-9),tl=T-(P.ldAt||-9);XF=k.indexOf('fx_')===0?null:tj<.12?{sx:.92,sy:1.08}:tl<.09?{sx:1.1,sy:.9}:k==='archer_walk'?{r:.05}:null;fr(pk,i,sx,sy+2-bob,.5,P.dir<0);if(P.deadT<=0&&k.indexOf('fx_')!==0)wGlow(ctx,k,i,sx,sy+2-bob,.5,P.dir<0,P.weapon,k===c+'_hurt'?.3:1,T,'g');if(P.hurtA>.25&&P.deadT<=0){const a0=ctx.globalAlpha;ctx.globalAlpha=a0*.85;fr(pk,i,sx,sy+2-bob,.5,P.dir<0,1);ctx.globalAlpha=a0}XF=null}ctx.restore();return}
  if(P.deadT>0){ctx.globalAlpha=.4}
  if(P.inv_t>0&&Math.floor(T*20)%2&&P.deadT<=0){ctx.globalAlpha=.45}
  const f=!P.onG?2:Math.abs(P.vx)>1?Math.floor(P.anim)%2:0,img=PSPR[P.cls][f],sx=Math.round(P.x-cam),sy=Math.round(P.y);

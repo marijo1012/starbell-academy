@@ -96,6 +96,7 @@ img.ico,img.tico,#bagList img,#toast img{object-fit:contain;image-rendering:pixe
   <div class="classes" id="clsList"></div>
   
   <p class="muted" id="ctrlInfo"></p>
+  <p class="muted" style="margin:10px 0 0;font-size:12px">Effects use pixelfx (MIT), Patch and Hugo Duprez</p>
 </div></div>
 
 <div class="modal" id="mStats"><div class="card"><button class="xbtn" data-close aria-label="Close">✕</button>
@@ -140,6 +141,7 @@ img.ico,img.tico,#bagList img,#toast img{object-fit:contain;image-rendering:pixe
   <h2>Settings</h2>
   <div id="setRows"></div>
   <div class="row"><button class="btn" id="bSwitch">Switch character</button><button class="btn" data-close>Close</button></div>
+  <p class="muted" style="margin:10px 0 0;font-size:12px">Effects use pixelfx (MIT), Patch and Hugo Duprez</p>
 </div></div>
 
 <div class="modal" id="mCode"><div class="card"><button class="xbtn" data-close aria-label="Close">✕</button>
@@ -194,11 +196,12 @@ img.ico,img.tico,#bagList img,#toast img{object-fit:contain;image-rendering:pixe
 <div id="ldr" aria-live="polite"><div class="lbox"><p id="ldrT">Loading…</p><div class="lbar"><div id="ldrB"></div></div></div></div>
 <script>
 /* Boot: read the art manifest, then start the game script. Art itself loads per region (see js/game.js). */
-(function(){const BUILD='daff950937',info=document.getElementById('saveInfo');
+(function(){const BUILD='c8d6c969b9',info=document.getElementById('saveInfo');
  fetch('manifest.json?b='+BUILD,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(m=>{
   const U={};for(const k in m)U[k]='art/'+(m[k].group||'core')+'/'+k+'.webp?v='+m[k].v;
-  window.SB_MAN=m;window.SB_URL=U;const s=document.createElement('script');s.src='js/game.js?v='+BUILD;
-  s.onerror=()=>{info.textContent='Could not load the game. Check your connection and refresh.'};document.body.appendChild(s)})
+  window.SB_MAN=m;window.SB_URL=U;const fail=()=>{info.textContent='Could not load the game. Check your connection and refresh.'},
+   add=(src,next)=>{const s=document.createElement('script');s.src=src+'?v='+BUILD;s.onload=next;s.onerror=fail;document.body.appendChild(s)};
+  add('js/pixelfx.js',()=>add('js/game.js'))})
  .catch(()=>{info.textContent='Could not load the game files. Check your connection and refresh.'})})();
 </script>
 
